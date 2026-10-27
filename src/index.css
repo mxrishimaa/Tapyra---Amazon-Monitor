@@ -1,0 +1,58 @@
+:root {
+  --verde-escuro: #0d3b2e;
+  --verde-medio: #1a5c45;
+  --verde-claro: #2d8a6a;
+  --laranja: #e67e22;
+  --laranja-claro: #f39c12;
+  --vermelho-alerta: #c0392b;
+  --amarelo-atencao: #f1c40f;
+  --cinza-claro: #f5f7f6;
+  --texto: #1a1a1a;
+  --texto-claro: #ffffff;
+  --sombra: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--cinza-claro);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.text-verde {
+  color: var(--verde-escuro) !important;
+}
+
+.bg-verde {
+  background-color: var(--verde-escuro) !important;
+}
+
+.btn-laranja {
+  background-color: var(--laranja) !important;
+  border-color: var(--laranja) !important;
+  color: white !important;
+}
+
+.btn-laranja:hover {
+  background-color: var(--laranja-claro) !important;
+  border-color: var(--laranja-claro) !important;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 8px;
+}
