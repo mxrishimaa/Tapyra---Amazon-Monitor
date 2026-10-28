@@ -9,8 +9,8 @@ function AppNavbar() {
     <Navbar expand="lg" className="navbar-custom" variant="dark" sticky="top">
       <Container>
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center gap-2">
-          <img src={LogoTapyra} width={50}/>
-          <span style={{ fontSize: '1.5rem' }}>Tapyra</span>
+          <img src={LogoTapyra} className="navbar-brand-logo" alt="Logo Tapyra" />
+          <span>Tapyra</span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="main-nav" />
         <Navbar.Collapse id="main-nav">
