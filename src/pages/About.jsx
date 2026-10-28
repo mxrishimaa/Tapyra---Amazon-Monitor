@@ -48,7 +48,7 @@ function About() {
       </ul>
 
       <p className="mt-4 small text-muted">
-        Este é um projeto acadêmico. Não substitui os sistemas oficiais de alerta nem a orientação da Defesa Civil ou Corpo de Bombeiros.
+        Este é um <b>projeto acadêmico</b>. Não substitui os sistemas oficiais de alerta nem a orientação da Defesa Civil ou Corpo de Bombeiros.
       </p>
     </Container>
   )
