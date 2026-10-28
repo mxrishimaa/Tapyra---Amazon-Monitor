@@ -20,6 +20,8 @@ function App() {
             <Route path="/mapa" element={<MapPage />} />
             <Route path="/alertas" element={<Alerts />} />
             <Route path="/sobre" element={<About />} />
+            {/* Rota Fallback 404*/}
+            <Route path='*' element={<div className='p-5 text-center'><h2>Página não encontrada</h2></div>} />
           </Routes>
         </main>
         <Footer />
