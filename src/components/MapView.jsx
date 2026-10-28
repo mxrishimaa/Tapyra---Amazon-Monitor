@@ -1,48 +1,182 @@
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
+import {
+  MapContainer,
+  TileLayer,
+  CircleMarker,
+  Popup,
+  LayersControl,
+  useMap,
+  useMapEvents,
+} from 'react-leaflet'
+import { useEffect, useState, useRef } from 'react'
+import { fetchFocosFIRMS } from '../services/firms'
 import 'leaflet/dist/leaflet.css'
 
-const focosSimulados = [
-  { id: 1, lat: -3.1190, lng: -60.0217, confianca: 80, satelite: 'VIIRS', data: '2026-10-26 14:30' },
-  { id: 2, lat: -3.2500, lng: -59.9800, confianca: 95, satelite: 'MODIS', data: '2026-10-26 15:10' },
-  { id: 3, lat: -2.9800, lng: -60.1500, confianca: 70, satelite: 'VIIRS', data: '2026-10-26 13:45' },
-  { id: 4, lat: -3.4000, lng: -60.3000, confianca: 85, satelite: 'VIIRS', data: '2026-10-26 16:00' },
-  { id: 5, lat: -3.0500, lng: -59.8500, confianca: 90, satelite: 'MODIS', data: '2026-10-26 14:55' },
-  { id: 6, lat: -2.8500, lng: -60.0500, confianca: 65, satelite: 'VIIRS', data: '2026-10-26 12:20' },
-]
+const { BaseLayer } = LayersControl
 
-const center = [-3.1190, -60.0217]
+const centerInicial = [-5.5, -58.0] // centro da Amazônia
+const zoomInicial = 5
 
-function MapController({ center }) {
+function MapController({ center, zoom }) {
   const map = useMap()
   useEffect(() => {
-    map.setView(center, 9)
-  }, [map, center])
+    map.setView(center, zoom)
+  }, [map, center, zoom])
+  return null
+}
+
+function MapEvents({ onBoundsChange }) {
+  useMapEvents({
+    moveend: (e) => {
+      const map = e.target
+      onBoundsChange(map.getBounds(), map.getZoom())
+    },
+    zoomend: (e) => {
+      const map = e.target
+      onBoundsChange(map.getBounds(), map.getZoom())
+    },
+  })
   return null
 }
 
 function MapView() {
+  const [focos, setFocos] = useState([])
+  const [carregando, setCarregando] = useState(false)
+  const [erro, setErro] = useState(null)
+  const debounceRef = useRef(null)
+
+  const buscarFocos = async (bounds) => {
+    if (!bounds) return
+
+    // Debounce: espera 600ms após o usuário parar de mover o mapa
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        setCarregando(true)
+        setErro(null)
+
+        const west = bounds.getWest()
+        const south = bounds.getSouth()
+        const east = bounds.getEast()
+        const north = bounds.getNorth()
+
+        const dados = await fetchFocosFIRMS(
+          { west, south, east, north },
+          1, // últimos 1 dia
+          'VIIRS_SNPP_NRT'
+        )
+
+        setFocos(dados)
+      } catch (err) {
+        console.error(err)
+        setErro(err.message)
+        setFocos([])
+      } finally {
+        setCarregando(false)
+      }
+    }, 600)
+  }
+
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <MapContainer center={center} zoom={9} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapController center={center} />
-        {focosSimulados.map((foco) => (
+    <div style={{ height: '100%', width: '100%', position: 'relative' }}>
+      {/* Indicador de carregamento */}
+      {carregando && (
+        <div style={{
+          position: 'absolute',
+          top: 12,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1000,
+          background: 'rgba(13, 59, 46, 0.9)',
+          color: 'white',
+          padding: '6px 14px',
+          borderRadius: 20,
+          fontSize: 13,
+          fontWeight: 500,
+        }}>
+          Atualizando focos de calor...
+        </div>
+      )}
+
+      {/* Mensagem de erro */}
+      {erro && (
+        <div style={{
+          position: 'absolute',
+          top: 12,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1000,
+          background: '#c0392b',
+          color: 'white',
+          padding: '6px 14px',
+          borderRadius: 8,
+          fontSize: 13,
+        }}>
+          Erro: {erro}
+        </div>
+      )}
+
+      <MapContainer
+        center={centerInicial}
+        zoom={zoomInicial}
+        style={{ height: '100%', width: '100%' }}
+        scrollWheelZoom={true}
+      >
+        <LayersControl position="topright">
+          <BaseLayer checked name="Ruas">
+            <TileLayer
+              attribution='&copy; OpenStreetMap'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+
+          <BaseLayer name="Satélite">
+            <TileLayer
+              attribution='Tiles &copy; Esri'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+            {/* Labels (nomes de cidades/estados) */}
+            <TileLayer
+              attribution='Labels &copy; Esri'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+              opacity={0.9}
+            />
+          </BaseLayer>
+        </LayersControl>
+
+        <MapController center={centerInicial} zoom={zoomInicial} />
+        <MapEvents onBoundsChange={buscarFocos} />
+
+        {focos.map((foco) => (
           <CircleMarker
             key={foco.id}
             center={[foco.lat, foco.lng]}
-            radius={8 + (foco.confianca / 20)}
-            pathOptions={{ color: '#c0392b', fillColor: '#e74c3c', fillOpacity: 0.7, weight: 2 }}
+            radius={6 + (foco.confianca / 30)}
+            pathOptions={{
+              color: '#c0392b',
+              fillColor: '#e74c3c',
+              fillOpacity: 0.8,
+              weight: 2,
+            }}
           >
             <Popup>
-              <strong>Foco de calor detectado</strong><br />
-              Confiança: {foco.confianca}%<br />
-              Satélite: {foco.satelite}<br />
-              Data: {foco.data}<br />
-              <small>Coordenadas: {foco.lat.toFixed(4)}, {foco.lng.toFixed(4)}</small>
+              <strong>🔥 Foco de calor detectado</strong>
+              <br />
+              Confiança: {foco.confianca}%
+              <br />
+              Satélite: {foco.satelite}
+              <br />
+              Data: {foco.data}
+              {foco.frp && (
+                <>
+                  <br />
+                  Potência (FRP): {foco.frp}
+                </>
+              )}
+              <br />
+              <small>
+                {foco.lat.toFixed(4)}, {foco.lng.toFixed(4)}
+              </small>
             </Popup>
           </CircleMarker>
         ))}
