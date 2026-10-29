@@ -71,7 +71,7 @@ function Home() {
         </div>
 
         <Row className="g-4 mb-5">
-          <Col sm={6} lg={6}>
+          <Col sm={6} lg={3}>
             <StatusCard
               iconClass="icon-foco"
               icon="🔥"
@@ -80,13 +80,31 @@ function Home() {
               description={`Raio de 700 km de Manaus · ${formatNumber(totalVisivel)} na área do mapa`}
             />
           </Col>
-          <Col sm={6} lg={6}>
+          <Col sm={6} lg={3}>
+            <StatusCard
+              iconClass="icon-ar"
+              icon="💨"
+              title="Qualidade do ar"
+              value="—"
+              description="Sensores em implantação"
+            />
+          </Col>
+          <Col sm={6} lg={3}>
             <StatusCard
               iconClass="icon-alerta"
               icon="⚠️"
               title="Alertas ativos"
               value={loading ? '…' : formatNumber(alertas.ativos)}
               description={alertas.detalhe}
+            />
+          </Col>
+          <Col sm={6} lg={3}>
+            <StatusCard
+              iconClass="icon-sensor"
+              icon="📡"
+              title="Sensores online"
+              value="0 / 3"
+              description="Rede de sensores em implantação"
             />
           </Col>
         </Row>
