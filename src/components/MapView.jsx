@@ -7,13 +7,14 @@ import {
   useMap,
   useMapEvents,
 } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 import { useEffect, useState, useRef } from 'react'
 import { fetchFocosFIRMS } from '../services/firms'
 import 'leaflet/dist/leaflet.css'
 
 const { BaseLayer } = LayersControl
 
-const centerInicial = [-5.5, -58.0] // centro da Amazônia
+const centerInicial = [-5.5, -58.0]
 const zoomInicial = 5
 
 function MapController({ center, zoom }) {
@@ -38,6 +39,13 @@ function MapEvents({ onBoundsChange }) {
   return null
 }
 
+// Cor baseada na confiança do foco
+function getCorFoco(confianca) {
+  if (confianca >= 85) return '#c0392b' // vermelho forte
+  if (confianca >= 70) return '#e67e22' // laranja
+  return '#f1c40f' // amarelo
+}
+
 function MapView() {
   const [focos, setFocos] = useState([])
   const [carregando, setCarregando] = useState(false)
@@ -47,7 +55,6 @@ function MapView() {
   const buscarFocos = async (bounds) => {
     if (!bounds) return
 
-    // Debounce: espera 600ms após o usuário parar de mover o mapa
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
     debounceRef.current = setTimeout(async () => {
@@ -62,7 +69,7 @@ function MapView() {
 
         const dados = await fetchFocosFIRMS(
           { west, south, east, north },
-          1, // últimos 1 dia
+          1,
           'VIIRS_SNPP_NRT'
         )
 
@@ -79,7 +86,6 @@ function MapView() {
 
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
-      {/* Indicador de carregamento */}
       {carregando && (
         <div style={{
           position: 'absolute',
@@ -87,18 +93,18 @@ function MapView() {
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 1000,
-          background: 'rgba(13, 59, 46, 0.9)',
+          background: 'rgba(13, 59, 46, 0.92)',
           color: 'white',
-          padding: '6px 14px',
+          padding: '6px 16px',
           borderRadius: 20,
           fontSize: 13,
           fontWeight: 500,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
         }}>
           Atualizando focos de calor...
         </div>
       )}
 
-      {/* Mensagem de erro */}
       {erro && (
         <div style={{
           position: 'absolute',
@@ -135,11 +141,10 @@ function MapView() {
               attribution='Tiles &copy; Esri'
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
-            {/* Labels (nomes de cidades/estados) */}
             <TileLayer
               attribution='Labels &copy; Esri'
               url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
-              opacity={0.9}
+              opacity={0.85}
             />
           </BaseLayer>
         </LayersControl>
@@ -147,39 +152,52 @@ function MapView() {
         <MapController center={centerInicial} zoom={zoomInicial} />
         <MapEvents onBoundsChange={buscarFocos} />
 
-        {focos.map((foco) => (
-          <CircleMarker
-            key={foco.id}
-            center={[foco.lat, foco.lng]}
-            radius={6 + (foco.confianca / 30)}
-            pathOptions={{
-              color: '#c0392b',
-              fillColor: '#e74c3c',
-              fillOpacity: 0.8,
-              weight: 2,
-            }}
-          >
-            <Popup>
-              <strong>🔥 Foco de calor detectado</strong>
-              <br />
-              Confiança: {foco.confianca}%
-              <br />
-              Satélite: {foco.satelite}
-              <br />
-              Data: {foco.data}
-              {foco.frp && (
-                <>
+        {/* ===== CLUSTER ===== */}
+        <MarkerClusterGroup
+          chunkedLoading
+          maxClusterRadius={80}
+          spiderfyOnMaxZoom={true}
+          showCoverageOnHover={false}
+          disableClusteringAtZoom={10}
+        >
+          {focos.map((foco) => {
+            const cor = getCorFoco(foco.confianca)
+
+            return (
+              <CircleMarker
+                key={foco.id}
+                center={[foco.lat, foco.lng]}
+                radius={5 + (foco.confianca / 40)}
+                pathOptions={{
+                  color: cor,
+                  fillColor: cor,
+                  fillOpacity: 0.75,
+                  weight: 1.5,
+                }}
+              >
+                <Popup>
+                  <strong>Foco de calor 🌡️</strong>
                   <br />
-                  Potência (FRP): {foco.frp}
-                </>
-              )}
-              <br />
-              <small>
-                {foco.lat.toFixed(4)}, {foco.lng.toFixed(4)}
-              </small>
-            </Popup>
-          </CircleMarker>
-        ))}
+                  Confiança: {foco.confianca}%
+                  <br />
+                  Satélite: {foco.satelite}
+                  <br />
+                  Data: {foco.data}
+                  {foco.frp && (
+                    <>
+                      <br />
+                      Potência (FRP): {Number(foco.frp).toFixed(1)}
+                    </>
+                  )}
+                  <br />
+                  <small>
+                    {foco.lat.toFixed(4)}, {foco.lng.toFixed(4)}
+                  </small>
+                </Popup>
+              </CircleMarker>
+            )
+          })}
+        </MarkerClusterGroup>
       </MapContainer>
     </div>
   )
