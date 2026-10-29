@@ -23,5 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-# Key NASA FIRMS
+# API NASA FIRMS
 .env

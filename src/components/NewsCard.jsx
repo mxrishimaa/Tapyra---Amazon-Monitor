@@ -15,3 +15,5 @@ function NewsCard({ title, source, date, summary, url }) {
         </Card>
     )
 }
+
+export default NewsCard

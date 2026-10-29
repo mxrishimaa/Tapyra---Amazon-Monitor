@@ -8,22 +8,51 @@
   flex: 1;
 }
 
+/* ========================================== NAVBAR ===== */
 .navbar-custom {
-  background-color: var(--verde-escuro) !important;
-  box-shadow: var(--sombra);
+  background-color: #0d3b2e !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 0.75rem 1rem;
 }
 
-.navbar-brand {
+.navbar-custom .navbar-brand {
   font-weight: 700;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
+  padding: 0.25rem 0.85rem 0.25rem 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus-visible {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .navbar-brand span {
-  color: var(--laranja);
+  color: #ffad45;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
 }
 
-.nav-link-custom {
+.navbar-brand-logo {
+  width: 42px;
+  height: 42px;
+  padding: 3px;
+  border-radius: 50%;
+  background-color: rgba(29, 27, 27, 0.199);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
+  object-fit: contain;
+}
+
+.navbar-custom .brand-name {
+  color: #e67e22 !important;
+}
+
+.navbar-custom .nav-link-custom {
   color: rgba(255, 255, 255, 0.85) !important;
   font-weight: 500;
   padding: 0.5rem 1rem !important;
@@ -31,18 +60,31 @@
   transition: all 0.2s ease;
 }
 
-.nav-link-custom:hover,
-.nav-link-custom.active {
-  color: white !important;
+.navbar-custom .nav-link-custom:hover,
+.navbar-custom .nav-link-custom.active {
+  color: #fff !important;
   background-color: rgba(255, 255, 255, 0.12);
 }
 
+.navbar-custom .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.navbar-custom .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* ===== HERO (Home) ===== */
 .hero-section {
-  background: linear-gradient(135deg, var(--verde-escuro) 0%, var(--verde-medio) 100%);
+  background-color: var(--verde-escuro);
+  background-image:
+    linear-gradient(rgba(7, 40, 31, 0.62), rgba(7, 40, 31, 0.68)),
+    url('/hero-amazonia.jpg');
+  background-position: center;
+  background-size: cover;
   color: white;
   padding: 4rem 0 3rem;
   position: relative;
-  overflow: hidden;
 }
 
 .hero-title {
@@ -50,12 +92,26 @@
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 1rem;
+  color: #fff;
 }
 
 .hero-subtitle {
   font-size: 1.15rem;
   opacity: 0.9;
   max-width: 540px;
+  color: #fff;
+}
+
+.btn-laranja {
+  background-color: #e67e22 !important;
+  border-color: #e67e22 !important;
+  color: white !important;
+}
+
+.btn-laranja:hover {
+  background-color: #f39c12 !important;
+  border-color: #f39c12 !important;
+  color: white !important;
 }
 
 .status-card {
@@ -151,27 +207,4 @@
   .map-wrapper {
     height: 350px;
   }
-}
-
-/* Estilo dos clusters */
-.marker-cluster-small {
-  background-color: rgba(241, 196, 15, 0.6) !important;
-}
-.marker-cluster-small div {
-  background-color: rgba(241, 196, 15, 0.85) !important;
-}
-
-.marker-cluster-medium {
-  background-color: rgba(230, 126, 34, 0.6) !important;
-}
-.marker-cluster-medium div {
-  background-color: rgba(230, 126, 34, 0.85) !important;
-}
-
-.marker-cluster-large {
-  background-color: rgba(192, 57, 43, 0.6) !important;
-}
-.marker-cluster-large div {
-  background-color: rgba(192, 57, 43, 0.9) !important;
-  color: white;
 }

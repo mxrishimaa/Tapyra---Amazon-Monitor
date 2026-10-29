@@ -7,197 +7,192 @@ import {
   useMap,
   useMapEvents,
 } from 'react-leaflet'
-import MarkerClusterGroup from 'react-leaflet-cluster'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { fetchFocosFIRMS } from '../services/firms'
 import 'leaflet/dist/leaflet.css'
+import { useFireDataContext } from '../context/FireDataContext'
 
 const { BaseLayer } = LayersControl
 
-const centerInicial = [-5.5, -58.0]
-const zoomInicial = 5
+const CENTER = [-3.119, -60.022]
+const ZOOM = 8
 
-function MapController({ center, zoom }) {
-  const map = useMap()
-  useEffect(() => {
-    map.setView(center, zoom)
-  }, [map, center, zoom])
-  return null
-}
-
-function MapEvents({ onBoundsChange }) {
-  useMapEvents({
-    moveend: (e) => {
-      const map = e.target
-      onBoundsChange(map.getBounds(), map.getZoom())
-    },
-    zoomend: (e) => {
-      const map = e.target
-      onBoundsChange(map.getBounds(), map.getZoom())
-    },
-  })
-  return null
-}
-
-// Cor baseada na confiança do foco
 function getCorFoco(confianca) {
-  if (confianca >= 85) return '#c0392b' // vermelho forte
-  if (confianca >= 70) return '#e67e22' // laranja
-  return '#f1c40f' // amarelo
+  if (confianca >= 85) return '#7e0808'
+  if (confianca >= 65) return '#cc800e'
+  return '#d6a51d'
+}
+
+function MapLoader({ onLoad }) {
+  const map = useMap()
+
+  useEffect(() => {
+    // pequena espera para o mapa calcular bounds corretos
+    const t = setTimeout(() => onLoad(map), 500)
+    return () => clearTimeout(t)
+  }, [map, onLoad])
+
+  useMapEvents({
+    moveend: () => onLoad(map),
+    zoomend: () => onLoad(map),
+  })
+
+  return null
 }
 
 function MapView() {
   const [focos, setFocos] = useState([])
-  const [carregando, setCarregando] = useState(false)
-  const [erro, setErro] = useState(null)
-  const debounceRef = useRef(null)
+  const [status, setStatus] = useState('idle')
+  const [erroMsg, setErroMsg] = useState('')
+  const [total, setTotal] = useState(0)
 
-  const buscarFocos = async (bounds) => {
-    if (!bounds) return
+  // Funcionalidade para atualização dos cards com base nos dados do mapa
+  const { publicarFocos, publicarLoading, publicarErro } = useFireDataContext()
 
-    if (debounceRef.current) clearTimeout(debounceRef.current)
+  const timerRef = useRef(null)
+  const abortRef = useRef(null)
+  const lastKeyRef = useRef('')
 
-    debounceRef.current = setTimeout(async () => {
+  const carregarFocos = useCallback((map) => {
+    if (!map) return
+
+    const bounds = map.getBounds()
+    const zoom = map.getZoom()
+    const key = [
+      bounds.getWest().toFixed(1),
+      bounds.getSouth().toFixed(1),
+      bounds.getEast().toFixed(1),
+      bounds.getNorth().toFixed(1),
+      zoom,
+    ].join('|')
+
+    if (key === lastKeyRef.current) return
+
+    if (timerRef.current) clearTimeout(timerRef.current)
+
+    timerRef.current = setTimeout(async () => {
+      lastKeyRef.current = key
+
+      if (abortRef.current) abortRef.current.abort()
+      abortRef.current = new AbortController()
+
       try {
-        setCarregando(true)
-        setErro(null)
-
-        const west = bounds.getWest()
-        const south = bounds.getSouth()
-        const east = bounds.getEast()
-        const north = bounds.getNorth()
+        setStatus('loading')
+        setErroMsg('')
+        publicarLoading()
 
         const dados = await fetchFocosFIRMS(
-          { west, south, east, north },
-          1,
-          'VIIRS_SNPP_NRT'
+          {
+            west: bounds.getWest(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            north: bounds.getNorth(),
+          },
+          2,
+          'VIIRS_SNPP_NRT',
+          abortRef.current.signal
         )
 
-        setFocos(dados)
+        // Limita só para não travar o navegador
+        const limite = zoom <= 5 ? 500 : zoom <= 7 ? 600 : 1000
+        const lista = dados.slice(0, limite)
+
+        console.log('[MapView] Renderizando', lista.length, 'de', dados.length)
+
+        setFocos(lista)
+        setTotal(dados.length)
+        setStatus('idle')
+        publicarFocos(dados) // cards usam a lista completa da área
       } catch (err) {
+        if (err.name === 'AbortError') return
         console.error(err)
-        setErro(err.message)
+        setErroMsg(err.message || 'Falha ao carregar focos')
+        setStatus('error')
         setFocos([])
-      } finally {
-        setCarregando(false)
+        setTotal(0)
+        publicarErro(err.message)
       }
-    }, 600)
-  }
+    }, 400)
+  }, [])
 
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
-      {carregando && (
-        <div style={{
-          position: 'absolute',
-          top: 12,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 1000,
-          background: 'rgba(13, 59, 46, 0.92)',
-          color: 'white',
-          padding: '6px 16px',
-          borderRadius: 20,
-          fontSize: 13,
-          fontWeight: 500,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
-        }}>
-          Atualizando focos de calor...
+      {status === 'loading' && (
+        <div className="map-status map-status--loading">Carregando focos...</div>
+      )}
+      {status === 'error' && (
+        <div className="map-status map-status--error">{erroMsg}</div>
+      )}
+      {status === 'idle' && total > 0 && (
+        <div className="map-status map-status--info">
+          {focos.length} focos na tela · {total} na área
         </div>
       )}
-
-      {erro && (
-        <div style={{
-          position: 'absolute',
-          top: 12,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 1000,
-          background: '#c0392b',
-          color: 'white',
-          padding: '6px 14px',
-          borderRadius: 8,
-          fontSize: 13,
-        }}>
-          Erro: {erro}
+      {status === 'idle' && total === 0 && (
+        <div className="map-status map-status--info">
+          Nenhum foco retornado para esta área
         </div>
       )}
 
       <MapContainer
-        center={centerInicial}
-        zoom={zoomInicial}
-        style={{ height: '100%', width: '100%' }}
+        center={CENTER}
+        zoom={ZOOM}
+        style={{ height: '100%', width: '100%', minHeight: 400 }}
         scrollWheelZoom={true}
       >
         <LayersControl position="topright">
           <BaseLayer checked name="Ruas">
             <TileLayer
-              attribution='&copy; OpenStreetMap'
+              attribution="&copy; OpenStreetMap"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              maxZoom={19}
             />
           </BaseLayer>
 
           <BaseLayer name="Satélite">
             <TileLayer
-              attribution='Tiles &copy; Esri'
+              attribution="Tiles &copy; Esri"
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-            <TileLayer
-              attribution='Labels &copy; Esri'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
-              opacity={0.85}
+              maxZoom={19}
             />
           </BaseLayer>
         </LayersControl>
 
-        <MapController center={centerInicial} zoom={zoomInicial} />
-        <MapEvents onBoundsChange={buscarFocos} />
+        <MapLoader onLoad={carregarFocos} />
 
-        {/* ===== CLUSTER ===== */}
-        <MarkerClusterGroup
-          chunkedLoading
-          maxClusterRadius={80}
-          spiderfyOnMaxZoom={true}
-          showCoverageOnHover={false}
-          disableClusteringAtZoom={10}
-        >
-          {focos.map((foco) => {
-            const cor = getCorFoco(foco.confianca)
-
-            return (
-              <CircleMarker
-                key={foco.id}
-                center={[foco.lat, foco.lng]}
-                radius={5 + (foco.confianca / 40)}
-                pathOptions={{
-                  color: cor,
-                  fillColor: cor,
-                  fillOpacity: 0.75,
-                  weight: 1.5,
-                }}
-              >
-                <Popup>
-                  <strong>Foco de calor 🌡️</strong>
+        {focos.map((foco) => (
+          <CircleMarker
+            key={foco.id}
+            center={[foco.lat, foco.lng]}
+            radius={6}
+            pathOptions={{
+              color: getCorFoco(foco.confianca),
+              fillColor: getCorFoco(foco.confianca),
+              fillOpacity: 0.85,
+              weight: 1,
+            }}
+          >
+            <Popup>
+              <strong>Foco de calor</strong>
+              <br />
+              Confiança: {foco.confianca}%
+              <br />
+              Satélite: {foco.satelite}
+              <br />
+              Data: {foco.data}
+              {foco.frp && (
+                <>
                   <br />
-                  Confiança: {foco.confianca}%
-                  <br />
-                  Satélite: {foco.satelite}
-                  <br />
-                  Data: {foco.data}
-                  {foco.frp && (
-                    <>
-                      <br />
-                      Potência (FRP): {Number(foco.frp).toFixed(1)}
-                    </>
-                  )}
-                  <br />
-                  <small>
-                    {foco.lat.toFixed(4)}, {foco.lng.toFixed(4)}
-                  </small>
-                </Popup>
-              </CircleMarker>
-            )
-          })}
-        </MarkerClusterGroup>
+                  FRP: {Number(foco.frp).toFixed(1)}
+                </>
+              )}
+              <br />
+              <small>
+                {foco.lat.toFixed(4)}, {foco.lng.toFixed(4)}
+              </small>
+            </Popup>
+          </CircleMarker>
+        ))}
       </MapContainer>
     </div>
   )
