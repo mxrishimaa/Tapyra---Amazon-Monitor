@@ -12,7 +12,7 @@ function MapPage() {
         <Row className="mb-3">
           <Col>
             <h1 className="h3 text-verde mb-1">Mapa de Focos de Calor</h1>
-            <p className="text-muted mb-0">Visualização em tempo real (dados de demonstração). Clique nos pontos para ver detalhes.</p>
+            <p className="text-muted mb-0">Visualização em <i>tempo real</i>. <b>Clique nos pontos</b> para ver detalhes.</p>
           </Col>
         </Row>
         <Row className="g-3">
@@ -42,7 +42,7 @@ function MapPage() {
                 </div>
                 <hr />
                 <p className="small text-muted mb-0">
-                  Fonte: NASA FIRMS (simulado). Um foco de calor não confirma automaticamente um incêndio.
+                  Fonte: NASA FIRMS (últimas 24h). Um foco de calor não confirma automaticamente um incêndio.
                 </p>
               </Card.Body>
             </Card>
