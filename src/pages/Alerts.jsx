@@ -111,6 +111,12 @@ function Alerts() {
 
   return (
     <Container className="py-5">
+      <div className="alert alert-warning border-0 shadow-sm mb-4" role="status">
+        <strong>Como interpretar os alertas.</strong>
+        {' '} Os níveis abaixo são uma estimativa do Tapyra com base nos focos de calor
+        detectados por satélite (NASA FIRMS) em um raio de cerca de 700 km de Manaus.
+        {' '} <i>Não substituem avisos da Defesa Civil, INPE ou bombeiros.</i>
+      </div>
       <h1 className="h3 text-verde mb-2">Alertas recentes</h1>
       <p className="text-muted mb-4">
         Alertas gerados a partir dos focos de calor da NASA FIRMS (últimas 24 h).
