@@ -77,7 +77,7 @@ function Home() {
               icon="🔥"
               title="Focos de calor"
               value={loading ? '…' : formatNumber(totalManauskm)}
-              description={`Nasa FIRMS: Raio de 300 km de Manaus`}
+              description={`Nasa FIRMS: Raio de 700 km de Manaus`}
             />
           </Col>
           <Col sm={6} lg={6}>
@@ -93,16 +93,15 @@ function Home() {
 
         <h2 className="h4 mb-3 text-verde">Mapa de focos de calor</h2>
         <p className="text-muted mb-3">
-          Dados do satélite NASA FIRMS (próximos de tempo real).
-          Um foco de calor indica anomalia térmica, portanto, não confirma incêndio por si só.<br />
-          <b>Mova o mapa </b> para atualizar os pontos e os cards.
+          Mova o mapa para atualizar os focos e os cards automaticamente.
+          O card de focos conta apenas pontos a até 700 km de Manaus.
         </p>
         <div className="map-wrapper mb-3">
           <MapView />
         </div>
         <div className="text-end">
           <Button as={Link} to="/mapa" variant="outline-success" size="sm">
-            Abrir mapa completo →
+            Abrir o mapa completo →
           </Button>
         </div>
       </Container>
