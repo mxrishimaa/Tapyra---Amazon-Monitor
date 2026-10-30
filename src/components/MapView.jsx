@@ -118,19 +118,19 @@ function MapView() {
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
       {status === 'loading' && (
-        <div className="map-status map-status--loading">Carregando focos...</div>
+        <div className="map-status map-status--loading">Consultando NASA FIRMS</div>
       )}
       {status === 'error' && (
         <div className="map-status map-status--error">{erroMsg}</div>
       )}
       {status === 'idle' && total > 0 && (
         <div className="map-status map-status--info">
-          {focos.length} focos na tela · {total} na área
+          {focos.length} focos na tela
         </div>
       )}
       {status === 'idle' && total === 0 && (
         <div className="map-status map-status--info">
-          Nenhum foco retornado para esta área
+          Nenhum foco nas ultimas leituras
         </div>
       )}
 
@@ -197,5 +197,6 @@ function MapView() {
     </div>
   )
 }
+
 
 export default MapView
