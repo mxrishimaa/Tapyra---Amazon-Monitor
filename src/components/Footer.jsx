@@ -12,6 +12,9 @@ function Footer() {
             <p className="small">
               Rede de Alerta de Fumaça e Fogo. Satélite, sensores de ar e notícias em tempo real para proteger comunidades da Amazônia.
             </p>
+            <p className="small mb-0 opacity-75">
+              Dados de satélite: NASA FIRMS. <br />Focos de calor são indicações térmicas, não diagnóstico de incêndio.
+            </p>
           </Col>
           <Col md={4}>
             <h6 className="text-white mb-3">Links úteis</h6>
