@@ -94,7 +94,7 @@ function Home() {
         <h2 className="h4 mb-3 text-verde">Mapa de focos de calor</h2>
         <p className="text-muted mb-3">
           Mova o mapa para atualizar os focos e os cards automaticamente.
-          O card de focos conta apenas pontos a até 300 km de Manaus.
+          O card de focos conta apenas pontos a até 700 km de Manaus.
         </p>
         <div className="map-wrapper mb-3">
           <MapView />
