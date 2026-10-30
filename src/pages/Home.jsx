@@ -71,7 +71,7 @@ function Home() {
         </div>
 
         <Row className="g-4 mb-5">
-          <Col sm={6} lg={3}>
+          <Col sm={6} lg={6}>
             <StatusCard
               iconClass="icon-foco"
               icon="🔥"
@@ -80,31 +80,13 @@ function Home() {
               description={`Nasa FIRMS: Raio de 300 km de Manaus`}
             />
           </Col>
-          <Col sm={6} lg={3}>
-            <StatusCard
-              iconClass="icon-ar"
-              icon="💨"
-              title="Qualidade do ar"
-              value="—"
-              description="Aguardando rede de sensores"
-            />
-          </Col>
-          <Col sm={6} lg={3}>
+          <Col sm={6} lg={6}>
             <StatusCard
               iconClass="icon-alerta"
               icon="⚠️"
               title="Alertas ativos"
               value={loading ? '…' : formatNumber(alertas.ativos)}
               description={`Estimativa com base nos focos próximos ${alertas.detalhe}`}
-            />
-          </Col>
-          <Col sm={6} lg={3}>
-            <StatusCard
-              iconClass="icon-sensor"
-              icon="📡"
-              title="Sensores online"
-              value="—"
-              description="Rede em implantação"
             />
           </Col>
         </Row>

@@ -64,8 +64,8 @@ function parseCSV(csvText) {
   const first = lines[0].toLowerCase()
   const hasHeader = first.includes('latitude') && first.includes('longitude')
 
-  let headers = []
-  let dataLines = []
+  let headers
+  let dataLines
 
   if (hasHeader) {
     headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/"/g, ''))

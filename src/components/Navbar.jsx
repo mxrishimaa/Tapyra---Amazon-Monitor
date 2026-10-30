@@ -4,9 +4,7 @@ import { Map, Bell, Info } from 'lucide-react'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
-import Badge from 'react-bootstrap/Badge'
-
-import LogoTapyra from '../assets/logo.png'
+import LogoTapyra from '../assets/Logo.png'
 
 function AppNavbar({ alertCount = 0 }) {
   const linkClass = ({ isActive }) =>
