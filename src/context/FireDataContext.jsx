@@ -4,7 +4,7 @@ const FireDataContext = createContext(null)
 
 // Manaus
 const MANAUS = { lat: -3.119, lng: -60.0217 }
-const RAIO_KM = 700
+const RAIO_KM = 300
 
 function distanciaKm(lat1, lng1, lat2, lng2) {
   const R = 6371
@@ -52,9 +52,9 @@ export function FireDataProvider({ children }) {
   // Alertas simples com base nos focos próximos de Manaus
   const alertas = useMemo(() => {
     const total = focosManaus.length
-    const alta = focosManaus.filter((f) => f.confianca >= 80).length
+    const alta = focosManaus.filter((f) => f.confianca >= 90).length
 
-    if (total >= 80 || alta >= 30) {
+    if (total >= 90 || alta >= 30) {
       return { ativos: 3, detalhe: '2 Atenção · 1 Crítico' }
     }
     if (total >= 30 || alta >= 10) {

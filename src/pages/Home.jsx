@@ -65,7 +65,7 @@ function Home() {
           <h2 className="h4 mb-0 text-verde">Visão geral</h2>
           <span className="small text-muted">
             {loading && 'Atualizando com o mapa…'}
-            {!loading && hora && `Atualizado às ${hora}`}
+            {!loading && hora && `Dados de Satélite • Atualizado às ${hora}`}
             {error && <span className="text-danger ms-2">{error}</span>}
           </span>
         </div>
@@ -77,7 +77,7 @@ function Home() {
               icon="🔥"
               title="Focos de calor"
               value={loading ? '…' : formatNumber(totalManauskm)}
-              description={`Raio de 700 km de Manaus · ${formatNumber(totalVisivel)} na área do mapa`}
+              description={`Nasa FIRMS: Raio de 700 km de Manaus`}
             />
           </Col>
           <Col sm={6} lg={6}>
@@ -86,7 +86,7 @@ function Home() {
               icon="⚠️"
               title="Alertas ativos"
               value={loading ? '…' : formatNumber(alertas.ativos)}
-              description={alertas.detalhe}
+              description={`Estimativa com base nos focos próximos ${alertas.detalhe}`}
             />
           </Col>
         </Row>

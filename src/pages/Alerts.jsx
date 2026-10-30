@@ -152,7 +152,7 @@ function Alerts() {
         <Col lg={4}>
           <Card className="border-0 shadow-sm">
             <Card.Body>
-              <h5 className="mb-3">Como funcionam os níveis</h5>
+              <h5 className="mb-3">Como funcionam os níveis:</h5>
               <div className="mb-3">
                 <Badge bg="" className="badge-atencao mb-1">Atenção</Badge>
                 <p className="small text-muted mb-0">Focos novos num raio de 50 km e vento na direção da localidade.</p>
