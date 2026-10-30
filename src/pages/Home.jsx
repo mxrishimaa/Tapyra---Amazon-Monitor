@@ -101,7 +101,7 @@ function Home() {
         </div>
         <div className="text-end">
           <Button as={Link} to="/mapa" variant="outline-success" size="sm">
-            Abrir mapa completo →
+            Abrir o mapa completo →
           </Button>
         </div>
       </Container>
