@@ -41,56 +41,11 @@ function AppNavbar({ alertCount = 0 }) {
         />
 
         <Navbar.Collapse id="main-nav">
-          <Nav className="ms-auto align-items-lg-center">
-            <Nav.Link
-              as={NavLink}
-              to="/"
-              end
-              className={linkClass}
-            >
-              Início
-            </Nav.Link>
-
-            <Nav.Link
-              as={NavLink}
-              to="/mapa"
-              className={linkClass}
-            >
-              <Map size={17} aria-hidden="true" />
-              Mapa
-            </Nav.Link>
-
-            <Nav.Link
-              as={NavLink}
-              to="/alertas"
-              className={linkClass}
-            >
-              <Bell size={17} aria-hidden="true" />
-              Alertas
-
-              {alertCount > 0 && (
-                <Badge
-                  bg="warning"
-                  text="dark"
-                  pill
-                  className="ms-1"
-                >
-                  {alertCount}
-                  <span className="visually-hidden">
-                    alertas ativos
-                  </span>
-                </Badge>
-              )}
-            </Nav.Link>
-
-            <Nav.Link
-              as={NavLink}
-              to="/sobre"
-              className={linkClass}
-            >
-              <Info size={17} aria-hidden="true" />
-              Sobre
-            </Nav.Link>
+          <Nav className="ms-auto">
+            <Nav.Link as={NavLink} to="/" end className="nav-link-custom">Início</Nav.Link>
+            <Nav.Link as={NavLink} to="/mapa" className="nav-link-custom"> Mapa</Nav.Link>
+            <Nav.Link as={NavLink} to="/alertas" className="nav-link-custom"> Alertas</Nav.Link>
+            <Nav.Link as={NavLink} to="/sobre" className="nav-link-custom"> Sobre</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
