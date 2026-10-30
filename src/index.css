@@ -27,9 +27,29 @@
 }
 
 .map-status--loading {
-  background: rgba(13, 59, 46, 0.92);
-  color: #fff;
+  background: #d3f8f8;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Espaço entre o texto e o ícone de carregamento */
 }
+
+/* Cria o círculo de loading em loop */
+.map-status--loading::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 3px solid rgba(206, 199, 199, 0.2); /* Cor de fundo do círculo */
+  border-top-color: currentColor; /* Cor do traço que gira (segue a cor do texto) */
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite; /* Loop infinito */
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 .map-status--error {
   background: #c0392b;
@@ -38,9 +58,23 @@
 }
 
 .map-status--info {
-  background: rgba(255, 255, 255, 0.92);
-  color: #1a1a1a;
+  background: rgba(219, 227, 231, 0.92);
+  color: #1a1a1a; 
+  
+  /* Atributos adicionados para desaparecer em 3 segundos */
+  animation: sumir 0.2s ease-out 2s forwards;
 }
+
+    @keyframes sumir {
+      from {
+        opacity: 1;
+        visibility: visible;
+      }
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
 
 .leaflet-container {
   width: 100%;

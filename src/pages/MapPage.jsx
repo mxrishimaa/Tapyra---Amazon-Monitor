@@ -12,7 +12,7 @@ function MapPage() {
         <Row className="mb-3">
           <Col>
             <h1 className="h3 text-verde mb-1">Mapa de Focos de Calor</h1>
-            <p className="text-muted mb-0">Visualização em <i>tempo real</i>. <b>Clique nos pontos</b> para ver detalhes.</p>
+            <p className="text-muted mb-0">NASA FIRMS | Clique nos pontos para ver: Confiabilidade, Data e Satélite.</p>
           </Col>
         </Row>
         <Row className="g-3">
@@ -35,14 +35,18 @@ function MapPage() {
                 </div>
                 <hr />
                 <h6 className="mb-2">Níveis de alerta</h6>
-                <div className="d-flex flex-column gap-2">
+                <div className="d-flex flex-row flex-wrap gap-2 align-items-center">
+                  <p className="small text-muted mb-0 w-100">
+                    Calculados no app a partir da quantidade e confiança dos focos próximos a Manaus — não são alertas oficiais.
+                  </p>
                   <Badge bg="" className="badge-atencao align-self-start">Atenção</Badge>
                   <Badge bg="" className="badge-alerta align-self-start">Alerta</Badge>
                   <Badge bg="" className="badge-critico align-self-start">Crítico</Badge>
                 </div>
                 <hr />
                 <p className="small text-muted mb-0">
-                  Fonte: NASA FIRMS (últimas 24h). Um foco de calor não confirma automaticamente um incêndio.
+                  <b>Fonte: <i>NASA FIRMS (VIIRS)</i>.</b> <br />Foco de calor ≠ incêndio confirmado.<br />
+                  Atualização conforme a área visível do mapa.
                 </p>
               </Card.Body>
             </Card>
