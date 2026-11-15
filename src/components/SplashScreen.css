@@ -1,0 +1,108 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  /* Fundo opaco o tempo todo — não deixa ver a Home */
+  background: #0d3b2e;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.splash--out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash__slides {
+  position: absolute;
+  inset: 0;
+  /* Também opaco por baixo das fotos */
+  background: #051813;
+}
+
+.splash__slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.9s ease, transform 3.5s ease-out;
+  /* Slides inativos ficam atrás; o ativo por cima */
+  z-index: 0;
+}
+
+.splash__slide.is-active {
+  opacity: 1;
+  transform:scale3d(0);
+  z-index: 1;
+}
+
+.splash__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(8, 28, 22, 0.88) 0%,
+    rgba(8, 28, 22, 0.45) 45%,
+    rgba(8, 28, 22, 0.3) 100%
+  );
+}
+
+/* ===== Conteúdo ===== */
+.splash__content {
+  position: relative;
+  z-index: 3;
+  width: min(520px, 92vw);
+  padding: 0 1.25rem 2.5rem;
+  text-align: center;
+  color: #fff;
+}
+
+.splash__phrase {
+  font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+  line-height: 1.4;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  animation: phrase-in 0.7s ease both;
+}
+
+@keyframes phrase-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.splash__bar {
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.splash__bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #e67e22, #f1c40f);
+  transition: width 0.08s linear;
+}
+
+.splash__hint {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}

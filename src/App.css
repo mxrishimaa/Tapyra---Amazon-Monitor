@@ -217,3 +217,8 @@
     height: 350px;
   }
 }
+
+.app-layout--booting {
+  max-height: 100vh;
+  overflow: hidden;
+}
