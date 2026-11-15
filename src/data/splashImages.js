@@ -1,13 +1,17 @@
 // URLs das imagens do splash (pode ser /splash/... ou link externo)
 export const SPLASH_IMAGES = [
-  'https://exemplo.com/amazonia-1.webp',
-  'https://exemplo.com/amazonia-2.webp',
-  'https://exemplo.com/amazonia-3.webp',
-  'https://exemplo.com/amazonia-4.webp',
-  'https://exemplo.com/amazonia-5.webp',
-  'https://exemplo.com/amazonia-6.webp',
-  'https://exemplo.com/amazonia-7.webp',
-  'https://exemplo.com/amazonia-8.webp',
+'https://images.pexels.com/photos/29722013/pexels-photo-29722013.jpeg',
+'https://images.pexels.com/photos/17862061/pexels-photo-17862061.jpeg',
+'https://images.pexels.com/photos/40437019/pexels-photo-40437019.jpeg',
+'https://images.pexels.com/photos/27038079/pexels-photo-27038079.jpeg',
+'https://images.pexels.com/photos/40437003/pexels-photo-40437003.jpeg',
+'https://images.pexels.com/photos/29759409/pexels-photo-29759409.jpeg',
+'https://images.pexels.com/photos/33025204/pexels-photo-33025204.jpeg',
+'https://images.pexels.com/photos/4044067/pexels-photo-4044067.jpeg',
+'https://images.pexels.com/photos/39824187/pexels-photo-39824187.jpeg',
+'https://images.pexels.com/photos/26108707/pexels-photo-26108707.jpeg',
+'https://images.pexels.com/photos/27947652/pexels-photo-27947652.jpeg',
+'https://images.pexels.com/photos/17025853/pexels-photo-17025853.jpeg'
 ]
 
 /** Embaralha uma cópia do array (Fisher–Yates) */
