@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button'
 import StatusCard from '../components/StatusCard'
 import MapView from '../components/MapView'
 import { useFireDataContext } from '../context/FireDataContext'
+import { useUserFeatures } from '../context/useUserFeatures'
 
 function formatNumber(n) {
   if (n === null || n === undefined) return '—'
@@ -13,6 +14,7 @@ function formatNumber(n) {
 }
 
 function Home() {
+  const { currentUser } = useUserFeatures()
   const {
     totalManauskm,
     totalVisivel,
@@ -91,7 +93,17 @@ function Home() {
           </Col>
         </Row>
 
-        <h2 className="h4 mb-3 text-verde">Mapa de focos de calor</h2>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h2 className="h4 mb-0 text-verde">Mapa de focos de calor</h2>
+          <Button
+            as={Link}
+            to={currentUser ? '/alertas?novo=1' : '/login'}
+            state={!currentUser ? { from: '/alertas?novo=1' } : undefined}
+            className="btn-laranja"
+          >
+            {currentUser ? 'Criar um alerta' : 'Entre para criar um alerta'}
+          </Button>
+        </div>
         <p className="text-muted mb-3">
           Mova o mapa para atualizar os focos e os cards automaticamente.
           O card de focos conta apenas pontos a até 700 km de Manaus.

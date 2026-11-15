@@ -3,16 +3,31 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Badge from 'react-bootstrap/Badge'
+import Button from 'react-bootstrap/Button'
+import { Link } from 'react-router-dom'
 import MapView from '../components/MapView'
+import { useUserFeatures } from '../context/useUserFeatures'
 
 function MapPage() {
+  const { currentUser } = useUserFeatures()
+
   return (
     <div className="map-page py-4">
       <Container fluid>
         <Row className="mb-3">
-          <Col>
-            <h1 className="h3 text-verde mb-1">Mapa de Focos de Calor</h1>
-            <p className="text-muted mb-0">Visualização em <i>tempo real</i>. <b>Clique nos pontos</b> para ver detalhes.</p>
+          <Col className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+              <h1 className="h3 text-verde mb-1">Mapa de Focos de Calor</h1>
+              <p className="text-muted mb-0">Visualização em <i>tempo real</i>. <b>Clique nos pontos</b> para ver detalhes.</p>
+            </div>
+            <Button
+              as={Link}
+              to={currentUser ? '/alertas?novo=1' : '/login'}
+              state={!currentUser ? { from: '/alertas?novo=1' } : undefined}
+              className="btn-laranja"
+            >
+              {currentUser ? 'Criar um alerta' : 'Entre para criar um alerta'}
+            </Button>
           </Col>
         </Row>
         <Row className="g-3">
