@@ -6,7 +6,10 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import LogoTapyra from '../assets/Logo.png'
 
+// Barra superior com links que mudam de página sem recarregar o site.
 function AppNavbar({ alertCount = 0 }) {
+  // Função auxiliar que calcula a classe a partir do estado ativo do NavLink;
+  // os links abaixo ainda usam uma classe fixa e não chamam esta função.
   const linkClass = ({ isActive }) =>
     `nav-link-custom${isActive ? ' active' : ''}`
 
@@ -18,6 +21,7 @@ function AppNavbar({ alertCount = 0 }) {
       sticky="top"
     >
       <Container>
+        {/* Link transforma o nome e a imagem da marca em atalho para a página inicial. */}
         <Navbar.Brand
           as={Link}
           to="/"
@@ -42,6 +46,7 @@ function AppNavbar({ alertCount = 0 }) {
 
         <Navbar.Collapse id="main-nav">
           <Nav className="ms-auto">
+            {/* Cada Nav.Link aponta para uma rota declarada em App.jsx. */}
             <Nav.Link as={NavLink} to="/" end className="nav-link-custom">Início</Nav.Link>
             <Nav.Link as={NavLink} to="/mapa" className="nav-link-custom"> Mapa</Nav.Link>
             <Nav.Link as={NavLink} to="/alertas" className="nav-link-custom"> Alertas</Nav.Link>
@@ -54,5 +59,5 @@ function AppNavbar({ alertCount = 0 }) {
 }
 
 
-
+// Permite importar esta barra nas páginas que compõem a aplicação.
 export default AppNavbar

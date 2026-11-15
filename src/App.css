@@ -1,3 +1,4 @@
+/* Estrutura vertical: mantém o conteúdo principal entre a navegação e o rodapé. */
 .app-layout {
   display: flex;
   flex-direction: column;
@@ -8,7 +9,7 @@
   flex: 1;
 }
 
-/* ========================================== NAVBAR ===== */
+/* Estilos da barra de navegação e dos links internos. */
 .navbar-custom {
   background-color: #0d3b2e !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -83,7 +84,7 @@
   filter: invert(1);
 }
 
-/* ===== HERO (Home) ===== */
+/* Área de destaque inicial, com imagem de fundo, título e chamadas para ação. */
 .hero-section {
   background-color: var(--verde-escuro);
   background-image:
@@ -96,6 +97,7 @@
   position: relative;
 }
 
+/* Botões e cartões de indicadores usados na página inicial. */
 .hero-title {
   font-size: 2.5rem;
   font-weight: 800;
@@ -166,6 +168,7 @@
   color: var(--verde-claro);
 }
 
+/* Mapa incorporado às páginas; a página dedicada ocupa mais altura. */
 .map-wrapper {
   height: 500px;
   border-radius: 12px;
@@ -178,6 +181,7 @@
   min-height: 450px;
 }
 
+/* Cores das etiquetas de gravidade e aparência do rodapé compartilhado. */
 .badge-atencao {
   background-color: var(--amarelo-atencao);
   color: #333;
@@ -209,6 +213,7 @@
   color: var(--laranja);
 }
 
+/* Em telas estreitas, reduz tamanhos e altura do mapa para caber no viewport. */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 1.8rem;
@@ -218,6 +223,7 @@
   }
 }
 
+/* Enquanto a tela de abertura aparece, impede rolagem no layout ao fundo. */
 .app-layout--booting {
   max-height: 100vh;
   overflow: hidden;

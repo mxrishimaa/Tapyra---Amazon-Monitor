@@ -7,11 +7,14 @@ import Badge from 'react-bootstrap/Badge'
 import ListGroup from 'react-bootstrap/ListGroup'
 import { fetchFocosFIRMS } from '../services/firms'
 
+// Ponto de referência usado para medir a distância dos focos.
 const MANAUS = { lat: -3.119, lng: -60.0217 }
 // Caixa de ~700 km em volta de Manaus (west, south, east, north)
 const AREA = { west: -66.5, south: -9.5, east: -53.5, north: 3.2 }
+// Intervalo entre consultas automáticas, expresso em milissegundos.
 const ATUALIZAR_MS = 5 * 60 * 1000
 
+// Mede a distância em quilômetros entre coordenadas usando a fórmula de Haversine.
 function distanciaKm(lat1, lng1, lat2, lng2) {
   const R = 6371
   const dLat = ((lat2 - lat1) * Math.PI) / 180
@@ -24,18 +27,22 @@ function distanciaKm(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
+// Transforma focos detectados em avisos resumidos para diferentes distâncias.
 function gerarAlertas(focos, agora) {
   const horario = agora.toLocaleString('pt-BR')
+  // Acrescenta a distância a cada foco sem modificar os objetos originais.
   const comDistancia = focos.map((f) => ({
     ...f,
     km: distanciaKm(MANAUS.lat, MANAUS.lng, f.lat, f.lng),
   }))
 
+  // Cria listas por faixa de distância; a faixa de 50 km também está dentro da de 150 km.
   const ate50 = comDistancia.filter((f) => f.km <= 50)
   const ate150 = comDistancia.filter((f) => f.km <= 150)
   const alertas = []
 
   if (ate50.length > 0) {
+    // O foco mais próximo é calculado a partir das distâncias dos registros locais.
     const maisProximo = Math.round(Math.min(...ate50.map((f) => f.km)))
     alertas.push({
       id: 'raio-50',
@@ -72,21 +79,27 @@ function gerarAlertas(focos, agora) {
   return alertas
 }
 
+// Escolhe a classe CSS correspondente à gravidade do aviso.
 function getBadgeClass(nivel) {
   if (nivel === 'Crítico') return 'badge-critico'
   if (nivel === 'Alerta') return 'badge-alerta'
   return 'badge-atencao'
 }
 
+// Página que consulta periodicamente os dados FIRMS e os apresenta como alertas.
 function Alerts() {
+  // Estado controla a lista e os indicadores de carregamento, erro e atualização.
   const [alertas, setAlertas] = useState([])
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState(null)
   const [atualizadoEm, setAtualizadoEm] = useState(null)
 
+  // O efeito inicia a consulta e a repetição temporizada; sua limpeza cancela
+  // tanto o pedido em andamento quanto o intervalo ao desmontar a página.
   useEffect(() => {
     const controller = new AbortController()
 
+    // Busca focos, converte-os em alertas e publica o resultado na interface.
     async function carregar() {
       try {
         const focos = await fetchFocosFIRMS(AREA, 1, 'VIIRS_SNPP_NRT', controller.signal)
@@ -131,6 +144,8 @@ function Alerts() {
             <p className="text-muted">Nenhum alerta ativo no momento.</p>
           )}
 
+          {/* map transforma cada alerta em um item; sua chave estável ajuda o React
+              a identificar qual item mudou entre atualizações. */}
           {alertas.length > 0 && (
             <ListGroup variant="flush" className="shadow-sm rounded">
               {alertas.map((alerta) => (
@@ -175,4 +190,5 @@ function Alerts() {
   )
 }
 
+// Exporta a página para a rota "/alertas".
 export default Alerts

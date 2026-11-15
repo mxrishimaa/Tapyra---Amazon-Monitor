@@ -5,7 +5,9 @@ import './SplashScreen.css'
 
 const MIN_DURATION = 3000
 
+// Tela de abertura exibida enquanto a aplicação inicia sua experiência visual.
 function SplashScreen({ onFinish }) {
+  // Inicializadores lazy escolhem uma frase e embaralham imagens apenas na montagem.
   const [phrase] = useState(() => pickSplashPhrase())
   // Nova ordem a cada montagem (F5 / primeiro acesso)
   const [images] = useState(() => shuffleImages(SPLASH_IMAGES))
@@ -13,7 +15,8 @@ function SplashScreen({ onFinish }) {
   const [progress, setProgress] = useState(0)
   const [leaving, setLeaving] = useState(false)
 
-  // Troca de slide
+  // Avança o índice do slide periodicamente; o módulo (%) faz a sequência voltar
+  // ao primeiro item depois da última imagem.
   useEffect(() => {
     if (images.length <= 1) return undefined
 
@@ -24,11 +27,12 @@ function SplashScreen({ onFinish }) {
     return () => clearInterval(id)
   }, [images.length])
 
-  // Barra + fim
+  // Atualiza a barra de progresso a cada quadro e avisa o componente pai ao fim.
   useEffect(() => {
     const start = Date.now()
     let frameId
 
+    // requestAnimationFrame agenda atualizações sincronizadas com a tela.
     const tick = () => {
       const elapsed = Date.now() - start
       const pct = Math.min(100, (elapsed / MIN_DURATION) * 100)
@@ -36,6 +40,7 @@ function SplashScreen({ onFinish }) {
 
       if (elapsed >= MIN_DURATION) {
         setLeaving(true)
+        // Aguarda a animação de saída antes de remover a tela de abertura.
         setTimeout(() => onFinish?.(), 3000)
         return
       }
@@ -43,12 +48,14 @@ function SplashScreen({ onFinish }) {
     }
 
     frameId = requestAnimationFrame(tick)
+    // Cancela o quadro pendente caso o componente saia antes do próximo tick.
     return () => cancelAnimationFrame(frameId)
   }, [onFinish])
 
   return (
     <div className={`splash ${leaving ? 'splash--out' : ''}`}>
       <div className="splash__slides" aria-hidden="true">
+        {/* O array é percorrido para criar slides; apenas o índice atual fica ativo. */}
         {images.map((src, i) => (
           <div
             key={`${src}-${i}`}
@@ -76,4 +83,5 @@ function SplashScreen({ onFinish }) {
   )
 }
 
+// Exporta a tela para que App.jsx controle sua exibição e encerramento.
 export default SplashScreen
