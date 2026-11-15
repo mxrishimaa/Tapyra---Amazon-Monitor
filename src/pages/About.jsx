@@ -3,6 +3,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 
+// Página informativa sobre o objetivo, as fontes e as tecnologias do projeto.
 function About() {
   return (
     <Container className="py-5">
@@ -11,6 +12,7 @@ function About() {
         A Rede de Alerta de Fumaça e Fogo (Tapyra) reúne dados de satélite, sensores de ar, meteorologia e notícias para avisar as pessoas antes e durante a chegada da fumaça.
       </p>
 
+      {/* Cada coluna descreve um aspecto do projeto em um cartão reutilizável. */}
       <Row className="g-4 mb-5">
         <Col md={4}>
           <Card className="border-0 shadow-sm h-100">
@@ -54,4 +56,5 @@ function About() {
   )
 }
 
+// Exporta a página para a rota "/sobre".
 export default About
