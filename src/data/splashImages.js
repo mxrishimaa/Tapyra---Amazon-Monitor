@@ -12,6 +12,16 @@ export const SPLASH_IMAGES = [
 'https://images.pexels.com/photos/26108707/pexels-photo-26108707.jpeg',
 'https://images.pexels.com/photos/27947652/pexels-photo-27947652.jpeg',
 'https://images.pexels.com/photos/17025853/pexels-photo-17025853.jpeg'
+
+// Imagens da pasta public/splash - -- verificar tempo de carregamento
+// "/public/splash/img1.jpg",
+    // "/public/splash/img2.jpg",
+    // "/public/splash/img3.jpg",
+    // "/public/splash/img4.jpg",
+    // "/public/splash/img5.jpg",
+    // "/public/splash/img6.jpg",
+    // "/public/splash/img7.jpg",
+    // "/public/splash/img8.jpg"
 ]
 
 /** Embaralha uma cópia do array (Fisher–Yates) */

@@ -21,7 +21,7 @@
   position: absolute;
   inset: 0;
   /* Também opaco por baixo das fotos */
-  background: #0d3b2e;
+  background: #051813;
 }
 
 .splash__slide {
@@ -39,7 +39,7 @@
 
 .splash__slide.is-active {
   opacity: 1;
-  transform: scale(1);
+  transform:scale3d(0);
   z-index: 1;
 }
 

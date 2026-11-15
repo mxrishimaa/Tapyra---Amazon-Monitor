@@ -3,7 +3,7 @@ import { pickSplashPhrase } from '../data/splashPhrases'
 import { SPLASH_IMAGES, shuffleImages } from '../data/splashImages'
 import './SplashScreen.css'
 
-const MIN_DURATION = 5000
+const MIN_DURATION = 3000
 
 function SplashScreen({ onFinish }) {
   const [phrase] = useState(() => pickSplashPhrase())
@@ -36,7 +36,7 @@ function SplashScreen({ onFinish }) {
 
       if (elapsed >= MIN_DURATION) {
         setLeaving(true)
-        setTimeout(() => onFinish?.(), 500)
+        setTimeout(() => onFinish?.(), 3000)
         return
       }
       frameId = requestAnimationFrame(tick)

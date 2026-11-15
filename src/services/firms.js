@@ -125,7 +125,7 @@ function parseCSV(csvText) {
     })
 
     const rawConf = String(obj.confidence ?? values[9] ?? '').toLowerCase()
-    let confianca = 50
+    let confianca = 60
     if (rawConf === 'h' || rawConf === 'high') confianca = 90
     else if (rawConf === 'n' || rawConf === 'nominal') confianca = 70
     else if (rawConf === 'l' || rawConf === 'low') confianca = 40
