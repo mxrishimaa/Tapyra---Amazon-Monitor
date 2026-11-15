@@ -1,0 +1,84 @@
+:root {
+  --verde-escuro: #0d3b2e;
+  --verde-medio: #1a5c45;
+  --verde-claro: #2d8a6a;
+  --laranja: #e67e22;
+  --laranja-claro: #f39c12;
+  --vermelho-alerta: #c0392b;
+  --amarelo-atencao: #f1c40f;
+  --cinza-claro: #f5f7f6;
+  --texto: #1a1a1a;
+  --texto-claro: #ffffff;
+  --sombra: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.map-status {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.map-status--loading {
+  background: #d3f8f8;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Espaço entre o texto e o ícone de carregamento */
+}
+
+/* Cria o círculo de loading em loop */
+.map-status--loading::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 3px solid rgba(206, 199, 199, 0.2); /* Cor de fundo do círculo */
+  border-top-color: currentColor; /* Cor do traço que gira (segue a cor do texto) */
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite; /* Loop infinito */
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.map-status--error {
+  background: #c0392b;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.map-status--info {
+  background: rgba(219, 227, 231, 0.92);
+  color: #1a1a1a; 
+  
+  /* Atributos adicionados para desaparecer em 3 segundos */
+  animation: sumir 0.2s ease-out 2s forwards;
+}
+
+    @keyframes sumir {
+      from {
+        opacity: 1;
+        visibility: visible;
+      }
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border-radius: 8px;
+}

@@ -1,0 +1,210 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* ========================================== NAVBAR ===== */
+.navbar-custom {
+  background-color: #0d3b2e !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.75rem 1rem;
+}
+
+.navbar-custom .navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  padding: 0.25rem 0.85rem 0.25rem 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus-visible {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.navbar-brand span {
+  color: #ffad45;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+}
+
+.navbar-brand-logo {
+  width: 42px;
+  height: 42px;
+  padding: 3px;
+  border-radius: 50%;
+  background-color: rgba(29, 27, 27, 0.199);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
+  object-fit: contain;
+}
+
+.navbar-custom .brand-name {
+  color: #e67e22 !important;
+}
+
+.navbar-custom .nav-link-custom {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.navbar-custom .nav-link-custom:hover,
+.navbar-custom .nav-link-custom.active {
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.navbar-custom .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.navbar-custom .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* ===== HERO (Home) ===== */
+.hero-section {
+  background-color: var(--verde-escuro);
+  background-image:
+    linear-gradient(rgba(7, 40, 31, 0.62), rgba(7, 40, 31, 0.68)),
+    url('/hero-amazonia.jpg');
+  background-position: center;
+  background-size: cover;
+  color: white;
+  padding: 4rem 0 3rem;
+  position: relative;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  opacity: 0.9;
+  max-width: 540px;
+  color: #fff;
+}
+
+.btn-laranja {
+  background-color: #e67e22 !important;
+  border-color: #e67e22 !important;
+  color: white !important;
+}
+
+.btn-laranja:hover {
+  background-color: #f39c12 !important;
+  border-color: #f39c12 !important;
+  color: white !important;
+}
+
+.status-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  transition: transform 0.2s ease;
+  height: 100%;
+}
+
+.status-card:hover {
+  transform: translateY(-4px);
+}
+
+.status-card .card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.icon-foco {
+  background-color: rgba(192, 57, 43, 0.15);
+  color: var(--vermelho-alerta);
+}
+
+.icon-ar {
+  background-color: rgba(230, 126, 34, 0.15);
+  color: var(--laranja);
+}
+
+.icon-alerta {
+  background-color: rgba(241, 196, 15, 0.2);
+  color: #d4ac0d;
+}
+
+.icon-sensor {
+  background-color: rgba(45, 138, 106, 0.15);
+  color: var(--verde-claro);
+}
+
+.map-wrapper {
+  height: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--sombra);
+}
+
+.map-page .map-wrapper {
+  height: calc(100vh - 180px);
+  min-height: 450px;
+}
+
+.badge-atencao {
+  background-color: var(--amarelo-atencao);
+  color: #333;
+}
+
+.badge-alerta {
+  background-color: var(--laranja);
+  color: white;
+}
+
+.badge-critico {
+  background-color: var(--vermelho-alerta);
+  color: white;
+}
+
+.footer-custom {
+  background-color: var(--verde-escuro);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 2rem 0 1rem;
+  margin-top: auto;
+}
+
+.footer-custom a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+}
+
+.footer-custom a:hover {
+  color: var(--laranja);
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  .map-wrapper {
+    height: 350px;
+  }
+}
