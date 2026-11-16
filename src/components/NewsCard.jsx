@@ -1,6 +1,5 @@
 import { Card, Badge } from 'react-bootstrap'
 
-// Cartão reutilizável para apresentar uma notícia e seu link para a matéria.
 function NewsCard({ title, source, date, summary, url }) {
     return (
         <Card className='mb-3 shadow-sm border-0'>
@@ -17,5 +16,4 @@ function NewsCard({ title, source, date, summary, url }) {
     )
 }
 
-// Exportação padrão para que páginas possam importar o cartão.
 export default NewsCard
