@@ -1,12 +1,9 @@
-import { createContext, useContext, useState, useMemo, useCallback } from 'react'
-
-// Contexto permite compartilhar os mesmos dados entre páginas sem passá-los
-// manualmente por cada nível de componentes.
-const FireDataContext = createContext(null)
+import { useState, useMemo, useCallback } from 'react'
+import { FireDataContext } from '../hooks/useFireDataContext'
 
 // Coordenadas de referência e raio usados para contar focos próximos de Manaus.
 const MANAUS = { lat: -3.119, lng: -60.0217 }
-const RAIO_KM = 300
+const RAIO_KM = 700
 
 // Calcula a distância em quilômetros entre dois pontos da superfície terrestre
 // pela fórmula de Haversine; entradas e saídas usam graus e quilômetros.
@@ -61,9 +58,9 @@ export function FireDataProvider({ children }) {
   // Estima o número e o nível dos alertas usando limites sobre os focos locais.
   const alertas = useMemo(() => {
     const total = focosManaus.length
-    const alta = focosManaus.filter((f) => f.confianca >= 90).length
+    const alta = focosManaus.filter((f) => f.confianca >= 80).length
 
-    if (total >= 90 || alta >= 30) {
+    if (total >= 80 || alta >= 30) {
       return { ativos: 3, detalhe: '2 Atenção · 1 Crítico' }
     }
     if (total >= 30 || alta >= 10) {
@@ -97,13 +94,4 @@ export function FireDataProvider({ children }) {
       {children}
     </FireDataContext.Provider>
   )
-}
-
-// Hook de acesso ao contexto; falha explicitamente se usado fora do Provider.
-export function useFireDataContext() {
-  const ctx = useContext(FireDataContext)
-  if (!ctx) {
-    throw new Error('useFireDataContext deve ser usado dentro de FireDataProvider')
-  }
-  return ctx
 }

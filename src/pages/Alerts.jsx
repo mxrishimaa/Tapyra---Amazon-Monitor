@@ -167,18 +167,18 @@ function Alerts() {
         <Col lg={4}>
           <Card className="border-0 shadow-sm">
             <Card.Body>
-              <h5 className="mb-3">Como funcionam os níveis:</h5>
+              <h5 className="mb-3">Como funcionam os níveis</h5>
               <div className="mb-3">
                 <Badge bg="" className="badge-atencao mb-1">Atenção</Badge>
-                <p className="small text-muted mb-0">Focos novos num raio de 50 km e vento na direção da localidade.</p>
+                <p className="small text-muted mb-0">Focos de calor detectados num raio de 50 km. A direção do vento ainda não é considerada.</p>
               </div>
               <div className="mb-3">
                 <Badge bg="" className="badge-alerta mb-1">Alerta</Badge>
-                <p className="small text-muted mb-0">Condição de atenção + aumento de PM2.5 ou notícia confirmada.</p>
+                <p className="small text-muted mb-0">Atenção somada a aumento de PM2.5 ou notícia confirmada. Ainda não disponível: depende de sensores e notícias.</p>
               </div>
               <div className="mb-3">
                 <Badge bg="" className="badge-critico mb-1">Crítico</Badge>
-                <p className="small text-muted mb-0">PM2.5 em faixa ruim ou muito ruim por tempo prolongado.</p>
+                <p className="small text-muted mb-0">PM2.5 em faixa ruim ou muito ruim por tempo prolongado. Ainda não disponível: depende de sensores.</p>
               </div>
               <hr />
               <p className="small mb-0"><strong>Emergência:</strong> Bombeiros 193 · Defesa Civil 199</p>

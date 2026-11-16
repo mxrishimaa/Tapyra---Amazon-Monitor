@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import StatusCard from '../components/StatusCard'
 import MapView from '../components/MapView'
-import { useFireDataContext } from '../context/FireDataContext'
+import { useFireDataContext } from '../hooks/useFireDataContext'
 
 // Converte um valor numérico em texto localizado, preservando o traço para ausências.
 function formatNumber(n) {
@@ -70,7 +70,7 @@ function Home() {
           <h2 className="h4 mb-0 text-verde">Visão geral</h2>
           <span className="small text-muted">
             {loading && 'Atualizando com o mapa…'}
-            {!loading && hora && `Dados de Satélite • Atualizado às ${hora}`}
+            {!loading && hora && `Atualizado às ${hora}`}
             {error && <span className="text-danger ms-2">{error}</span>}
           </span>
         </div>
@@ -83,7 +83,7 @@ function Home() {
               icon="🔥"
               title="Focos de calor"
               value={loading ? '…' : formatNumber(totalManauskm)}
-              description={`Nasa FIRMS: Raio de 700 km de Manaus`}
+              description={`Raio de 700 km de Manaus · ${formatNumber(totalVisivel)} na área do mapa`}
             />
           </Col>
           <Col sm={6} lg={6}>
@@ -92,7 +92,7 @@ function Home() {
               icon="⚠️"
               title="Alertas ativos"
               value={loading ? '…' : formatNumber(alertas.ativos)}
-              description={`Estimativa com base nos focos próximos ${alertas.detalhe}`}
+              description={alertas.detalhe}
             />
           </Col>
         </Row>

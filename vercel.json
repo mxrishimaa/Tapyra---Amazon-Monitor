@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/firms/:path*", "destination": "https://firms.modaps.eosdis.nasa.gov/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

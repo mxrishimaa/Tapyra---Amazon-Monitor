@@ -17,15 +17,12 @@ export async function fetchFocosFIRMS(
   const { west, south, east, north } = bounds
   const area = `${west},${south},${east},${north}`
 
-  // Em desenvolvimento, o Vite encaminha a chamada pelo proxy local para evitar
-  // problemas de origem; em produção, a aplicação consulta o servidor FIRMS.
-  const base = import.meta.env.DEV
-    ? '/api/firms'
-    : 'https://firms.modaps.eosdis.nasa.gov'
+  // Em desenvolvimento o proxy do Vite (vite.config.js) cuida desta rota;
+  // em produção, quem cuida é o rewrite do vercel.json.
+  const base = '/api/firms'
 
   const url = `${base}/api/area/csv/${MAP_KEY}/${source}/${area}/${dayRange}`
 
-  console.log('[FIRMS] URL:', url)
 
   // fetch realiza a chamada de rede; signal permite cancelar uma requisição antiga.
   const response = await fetch(url, { signal, cache: 'no-store' })
@@ -36,8 +33,6 @@ export async function fetchFocosFIRMS(
 
   // A resposta chega como texto CSV e é validada antes de ser interpretada.
   const csvText = await response.text()
-  console.log('[FIRMS] Tamanho resposta:', csvText.length, 'chars')
-  console.log('[FIRMS] Início da resposta:\n', csvText.slice(0, 300))
 
   if (
     csvText.startsWith('Invalid') ||
@@ -49,7 +44,6 @@ export async function fetchFocosFIRMS(
 
   // Converte cada linha do CSV em um objeto com coordenadas, data e confiança.
   const focos = parseCSV(csvText)
-  console.log('[FIRMS] Focos parseados:', focos.length)
 
   return focos
 }
@@ -82,7 +76,6 @@ function parseCSV(csvText) {
   if (hasHeader) {
     headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/"/g, ''))
     dataLines = lines.slice(1)
-    console.log('[FIRMS] Headers:', headers)
   } else {
     // Sem cabeçalho: usa ordem padrão VIIRS NRT
     headers = [
@@ -102,7 +95,6 @@ function parseCSV(csvText) {
       'daynight',
     ]
     dataLines = lines
-    console.log('[FIRMS] Sem header — usando ordem padrão VIIRS')
   }
 
   // Localiza as colunas de latitude e longitude pelo nome para tolerar
