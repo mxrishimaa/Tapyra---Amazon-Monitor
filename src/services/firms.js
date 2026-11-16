@@ -3,7 +3,7 @@ const MAP_KEY = import.meta.env.VITE_FIRMS_MAP_KEY
 export async function fetchFocosFIRMS(
   bounds,
   dayRange = 2, // 2 dias aumenta chance de ter dados
-  source = 'VIIRS_SNPP_NRT',
+  source = 'MODIS_NRT',
   signal
 ) {
   if (!MAP_KEY) {
@@ -29,14 +29,13 @@ export async function fetchFocosFIRMS(
 
   const csvText = await response.text()
   console.log('[FIRMS] Tamanho resposta:', csvText.length, 'chars')
-  console.log('[FIRMS] Início da resposta:\n', csvText.slice(0, 300))
-
+  const firstLine = csvText.trim().split(/\r?\n/)[0].toLowerCase()
   if (
-    csvText.startsWith('Invalid') ||
-    csvText.toLowerCase().includes('map_key') ||
-    csvText.toLowerCase().includes('error')
+    firstLine.startsWith('invalid') ||
+    firstLine.includes('map_key') ||
+    !firstLine.includes('latitude')
   ) {
-    throw new Error('MAP_KEY inválida ou resposta de erro da NASA')
+    throw new Error(`Resposta inesperada da NASA FIRMS: ${firstLine.slice(0, 100)}`)
   }
 
   const focos = parseCSV(csvText)
