@@ -1,10 +1,9 @@
-import { createContext, useContext, useState, useMemo, useCallback } from 'react'
-
-const FireDataContext = createContext(null)
+import { useState, useMemo, useCallback } from 'react'
+import { FireDataContext } from '../hooks/useFireDataContext'
 
 // Manaus
 const MANAUS = { lat: -3.119, lng: -60.0217 }
-const RAIO_KM = 300
+const RAIO_KM = 700
 
 function distanciaKm(lat1, lng1, lat2, lng2) {
   const R = 6371
@@ -52,9 +51,9 @@ export function FireDataProvider({ children }) {
   // Alertas simples com base nos focos próximos de Manaus
   const alertas = useMemo(() => {
     const total = focosManaus.length
-    const alta = focosManaus.filter((f) => f.confianca >= 90).length
+    const alta = focosManaus.filter((f) => f.confianca >= 80).length
 
-    if (total >= 90 || alta >= 30) {
+    if (total >= 80 || alta >= 30) {
       return { ativos: 3, detalhe: '2 Atenção · 1 Crítico' }
     }
     if (total >= 30 || alta >= 10) {
@@ -85,12 +84,4 @@ export function FireDataProvider({ children }) {
       {children}
     </FireDataContext.Provider>
   )
-}
-
-export function useFireDataContext() {
-  const ctx = useContext(FireDataContext)
-  if (!ctx) {
-    throw new Error('useFireDataContext deve ser usado dentro de FireDataProvider')
-  }
-  return ctx
 }

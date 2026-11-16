@@ -10,7 +10,7 @@ import {
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { fetchFocosFIRMS } from '../services/firms'
 import 'leaflet/dist/leaflet.css'
-import { useFireDataContext } from '../context/FireDataContext'
+import { useFireDataContext } from '../hooks/useFireDataContext'
 
 const { BaseLayer } = LayersControl
 
@@ -113,24 +113,24 @@ function MapView() {
         publicarErro(err.message)
       }
     }, 400)
-  }, [])
+  }, [publicarErro, publicarFocos, publicarLoading])
 
   return (
     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
       {status === 'loading' && (
-        <div className="map-status map-status--loading">Consultando NASA FIRMS</div>
+        <div className="map-status map-status--loading">Carregando focos...</div>
       )}
       {status === 'error' && (
         <div className="map-status map-status--error">{erroMsg}</div>
       )}
       {status === 'idle' && total > 0 && (
         <div className="map-status map-status--info">
-          {focos.length} focos na tela
+          {focos.length} focos na tela · {total} na área
         </div>
       )}
       {status === 'idle' && total === 0 && (
         <div className="map-status map-status--info">
-          Nenhum foco nas ultimas leituras
+          Nenhum foco retornado para esta área
         </div>
       )}
 
@@ -197,6 +197,5 @@ function MapView() {
     </div>
   )
 }
-
 
 export default MapView
