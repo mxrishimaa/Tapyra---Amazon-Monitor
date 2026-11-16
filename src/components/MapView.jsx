@@ -88,8 +88,8 @@ function MapView() {
             east: bounds.getEast(),
             north: bounds.getNorth(),
           },
-          2,
-          'VIIRS_SNPP_NRT',
+          5,
+          'MODIS_NRT',
           abortRef.current.signal
         )
 

@@ -104,7 +104,7 @@ function Alerts() {
 
     async function carregar() {
       try {
-        const focos = await fetchFocosFIRMS(AREA, 1, 'VIIRS_SNPP_NRT', controller.signal)
+        const focos = await fetchFocosFIRMS(AREA, 5, 'MODIS_NRT', controller.signal)
         const agora = new Date()
         setAlertas(gerarAlertas(focos, agora))
         setAtualizadoEm(agora)
