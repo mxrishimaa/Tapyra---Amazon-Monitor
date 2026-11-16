@@ -1,0 +1,1 @@
+// Arquivo reservado para uma futura página de login; ainda não há componente implementado.

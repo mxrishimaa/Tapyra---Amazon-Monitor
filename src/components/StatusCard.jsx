@@ -1,5 +1,6 @@
 import Card from 'react-bootstrap/Card'
 
+// Cartão genérico de indicador: recebe ícone, título, valor e descrição por props.
 function StatusCard({ iconClass, icon, title, value, description }) {
   return (
     <Card className="status-card">
@@ -13,4 +14,5 @@ function StatusCard({ iconClass, icon, title, value, description }) {
   )
 }
 
+// Exporta o componente para compor os indicadores das páginas.
 export default StatusCard

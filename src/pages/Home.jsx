@@ -7,12 +7,15 @@ import StatusCard from '../components/StatusCard'
 import MapView from '../components/MapView'
 import { useFireDataContext } from '../hooks/useFireDataContext'
 
+// Converte um valor numérico em texto localizado, preservando o traço para ausências.
 function formatNumber(n) {
   if (n === null || n === undefined) return '—'
   return n.toLocaleString('pt-BR')
 }
 
+// Página inicial: resume os dados do mapa e oferece atalhos para outras áreas.
 function Home() {
+  // Lê do contexto os dados que o MapView atualiza durante as consultas.
   const {
     totalManauskm,
     totalVisivel,
@@ -22,6 +25,7 @@ function Home() {
     atualizadoEm,
   } = useFireDataContext()
 
+  // Só formata o horário quando já existe uma data de atualização.
   const hora =
     atualizadoEm &&
     atualizadoEm.toLocaleTimeString('pt-BR', {
@@ -61,6 +65,7 @@ function Home() {
       </section>
 
       <Container className="py-5">
+        {/* Os estados de carregamento, atualização e erro ajudam a interpretar os cards. */}
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
           <h2 className="h4 mb-0 text-verde">Visão geral</h2>
           <span className="small text-muted">
@@ -70,6 +75,7 @@ function Home() {
           </span>
         </div>
 
+        {/* Props personalizam os cartões reutilizáveis com os valores do contexto. */}
         <Row className="g-4 mb-5">
           <Col sm={6} lg={6}>
             <StatusCard
@@ -96,6 +102,7 @@ function Home() {
           Mova o mapa para atualizar os focos e os cards automaticamente.
           O card de focos conta apenas pontos a até 700 km de Manaus.
         </p>
+        {/* Este mesmo componente de mapa também é utilizado na página /mapa. */}
         <div className="map-wrapper mb-3">
           <MapView />
         </div>
@@ -109,4 +116,5 @@ function Home() {
   )
 }
 
+// Exporta a página para a rota "/" registrada no componente App.
 export default Home

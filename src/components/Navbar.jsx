@@ -15,6 +15,7 @@ function AppNavbar() {
         <Navbar.Toggle aria-controls="main-nav" />
         <Navbar.Collapse id="main-nav">
           <Nav className="ms-auto">
+            {/* Cada Nav.Link aponta para uma rota declarada em App.jsx. */}
             <Nav.Link as={NavLink} to="/" end className="nav-link-custom">Início</Nav.Link>
             <Nav.Link as={NavLink} to="/mapa" className="nav-link-custom"> Mapa</Nav.Link>
             <Nav.Link as={NavLink} to="/alertas" className="nav-link-custom"> Alertas</Nav.Link>

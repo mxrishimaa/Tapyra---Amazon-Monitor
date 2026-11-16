@@ -5,6 +5,7 @@ import Card from 'react-bootstrap/Card'
 import Badge from 'react-bootstrap/Badge'
 import MapView from '../components/MapView'
 
+// Página de mapa em tela ampla, com uma legenda ao lado dos focos.
 function MapPage() {
   return (
     <div className="map-page py-4">
@@ -15,6 +16,7 @@ function MapPage() {
             <p className="text-muted mb-0">Visualização em <i>tempo real</i>. <b>Clique nos pontos</b> para ver detalhes.</p>
           </Col>
         </Row>
+        {/* A grade responsiva reserva a maior área ao mapa e a lateral à legenda. */}
         <Row className="g-3">
           <Col lg={9}>
             <div className="map-wrapper">
@@ -53,4 +55,5 @@ function MapPage() {
   )
 }
 
+// Exporta esta página para a rota "/mapa".
 export default MapPage
