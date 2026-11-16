@@ -2,7 +2,6 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
-// Rodapé compartilhado: apresenta informações, fontes de dados e contatos.
 function Footer() {
   return (
     <footer className="footer-custom">
@@ -16,7 +15,6 @@ function Footer() {
           </Col>
           <Col md={4}>
             <h6 className="text-white mb-3">Links úteis</h6>
-            {/* Links externos abrem em outra aba e não concedem acesso à janela atual. */}
             <ul className="list-unstyled small">
               <li><a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noreferrer">NASA FIRMS</a></li>
               <li><a href="https://queimadas.dgi.inpe.br/" target="_blank" rel="noreferrer">BDQueimadas (INPE)</a></li>
@@ -41,5 +39,4 @@ function Footer() {
   )
 }
 
-// Exporta o rodapé para ser exibido pelo componente raiz.
 export default Footer
