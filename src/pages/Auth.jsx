@@ -6,7 +6,8 @@ import { useUserFeatures } from '../context/useUserFeatures'
 function Auth() {
   const [mode, setMode] = useState('login')
   const [notice, setNotice] = useState('')
-  const { registerPreviewUser } = useUserFeatures()
+  const [submitting, setSubmitting] = useState(false)
+  const { loginUser, registerUser } = useUserFeatures()
   const location = useLocation()
   const navigate = useNavigate()
   const isRegistering = mode === 'register'
@@ -16,28 +17,48 @@ function Auth() {
     setNotice('')
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    setNotice('')
 
     const formData = new FormData(event.currentTarget)
-    if (isRegistering && formData.get('password') !== formData.get('confirmPassword')) {
+    const email = formData.get('email').trim()
+    const password = formData.get('password')
+
+    if (isRegistering && password !== formData.get('confirmPassword')) {
       setNotice('As senhas não conferem. Verifique os campos e tente novamente.')
       return
     }
 
-    if (!isRegistering) {
-      setNotice('O login será validado quando o backend estiver conectado. Nesta prévia, crie uma conta para acessar o perfil.')
-      return
-    }
+    setSubmitting(true)
+    try {
+      if (!isRegistering) {
+        await loginUser({ email, password })
+      } else {
+        const name = formData.get('name').trim()
+        if (!name) {
+          setNotice('Informe seu nome para criar a conta.')
+          setSubmitting(false)
+          return
+        }
+        const phone = (formData.get('phone') || '').trim()
+        const acceptWhatsapp = Boolean(formData.get('acceptWhatsapp'))
 
-    const name = formData.get('name').trim()
-    if (!name) {
-      setNotice('Informe seu nome para criar a conta.')
-      return
-    }
+        await registerUser({
+          name,
+          email,
+          password,
+          phone,
+          acceptWhatsapp,
+        })
+      }
 
-    registerPreviewUser({ name, email: formData.get('email').trim() })
-    navigate(location.state?.from || '/perfil', { replace: true })
+      navigate(location.state?.from || '/perfil', { replace: true })
+    } catch (err) {
+      setNotice(err.message || 'Erro ao conectar com o servidor.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -116,6 +137,23 @@ function Auth() {
             />
           </div>
 
+          {isRegistering && (
+            <div className="auth-field">
+              <label htmlFor="auth-phone">WhatsApp (opcional)</label>
+              <input
+                id="auth-phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                placeholder="(92) 99999-0000"
+              />
+              <label className="d-flex align-items-center gap-2 mt-2 small">
+                <input type="checkbox" name="acceptWhatsapp" defaultChecked />
+                Receber alertas de queimadas no WhatsApp
+              </label>
+            </div>
+          )}
+
           <div className="auth-field">
             <label htmlFor="auth-password">Senha</label>
             <input
@@ -144,15 +182,15 @@ function Auth() {
             </div>
           )}
 
-          <button className="auth-submit" type="submit">
-            {isRegistering ? 'Criar minha conta' : 'Entrar'}
+          <button className="auth-submit" type="submit" disabled={submitting}>
+            {submitting
+              ? 'Aguarde...'
+              : isRegistering
+                ? 'Criar minha conta'
+                : 'Entrar'}
           </button>
           {notice && <p className="auth-notice" role="status">{notice}</p>}
         </form>
-
-        <p className="auth-privacy">
-          O cadastro cria uma sessão temporária nesta prévia. Login real e persistência dependem do backend; senhas não são armazenadas.
-        </p>
       </section>
     </Container>
   )
