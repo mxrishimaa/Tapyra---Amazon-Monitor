@@ -124,7 +124,7 @@ function Alerts() {
     }
   }, [])
 
-  function handleCommunityAlertSubmit(event) {
+async function handleCommunityAlertSubmit(event) {
     event.preventDefault()
     if (!currentUser) {
       setFormUserEmail(null)
@@ -139,15 +139,19 @@ function Alerts() {
       return
     }
 
-    addCommunityAlert({
-      location: formData.get('location').trim(),
-      severity: formData.get('severity'),
-      startedAt: startedAt.toISOString(),
-      description: formData.get('description').trim(),
-    })
-    event.currentTarget.reset()
-    setFormUserEmail(null)
-    setAvisoRelato('Relato adicionado à lista desta prévia. O compartilhamento real depende do backend.')
+    try {
+      await addCommunityAlert({
+        location: formData.get('location').trim(),
+        severity: formData.get('severity'),
+        startedAt: startedAt.toISOString(),
+        description: formData.get('description').trim(),
+      })
+      event.currentTarget.reset()
+      setFormUserEmail(null)
+      setAvisoRelato('Relato publicado e alerta enviado por WhatsApp para os inscritos!')
+    } catch (err) {
+      setAvisoRelato(err.message || 'Erro ao enviar alerta.')
+    }
   }
 
   return (
