@@ -54,7 +54,6 @@ export function UserFeaturesProvider({ children }) {
   }, [])
 
   // Restaura sessão ao atualizar a página (F5)
-  // Restaura sessão ao atualizar a página (F5)
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY)
     if (!token) return
@@ -122,7 +121,6 @@ export function UserFeaturesProvider({ children }) {
     [aplicarSessao]
   )
 
-  // Mantém compatibilidade caso algum componente ainda chame registerPreviewUser
   const registerPreviewUser = useCallback((user) => {
     const account = { name: user.name, email: user.email }
     setCurrentUser(account)
@@ -138,6 +136,32 @@ export function UserFeaturesProvider({ children }) {
     localStorage.removeItem(USER_KEY)
     setCurrentUser(null)
     setProfile(initialProfile)
+  }, [])
+
+  const changePassword = useCallback(async ({ currentPassword, newPassword }) => {
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (!token) {
+      throw new Error('É necessário estar logado para alterar a senha.')
+    }
+
+    const res = await fetch(`${API_URL}/usuarios/me/senha`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        senhaAtual: currentPassword,
+        novaSenha: newPassword,
+      }),
+    })
+
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new Error(data.erro || 'Não foi possível alterar a senha.')
+    }
+
+    return data.mensagem || 'Senha alterada com sucesso.'
   }, [])
 
   const updateProfile = useCallback(async (nextProfile) => {
@@ -183,6 +207,69 @@ export function UserFeaturesProvider({ children }) {
     }
   }, [])
 
+  const fetchRegions = useCallback(async () => {
+    const res = await fetch(`${API_URL}/regioes`)
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new Error(data.erro || 'Não foi possível carregar as regiões.')
+    }
+    return data.regioes || []
+  }, [])
+
+  const fetchMyRegions = useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (!token) return []
+
+    const res = await fetch(`${API_URL}/regioes/minhas`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new Error(data.erro || 'Não foi possível carregar suas regiões.')
+    }
+    return data.inscricoes || []
+  }, [])
+
+  const subscribeRegion = useCallback(async (regiaoId, nivelMinimo = 'atencao') => {
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (!token) {
+      throw new Error('Entre na sua conta para acompanhar uma região.')
+    }
+
+    const res = await fetch(`${API_URL}/regioes/inscricao`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        regiaoId: Number(regiaoId),
+        nivelMinimo,
+      }),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new Error(data.erro || 'Não foi possível adicionar a região.')
+    }
+    return data.inscricao
+  }, [])
+
+  const unsubscribeRegion = useCallback(async (regiaoId) => {
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (!token) {
+      throw new Error('Entre na sua conta para remover uma região.')
+    }
+
+    const res = await fetch(`${API_URL}/regioes/inscricao/${regiaoId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.erro || 'Não foi possível remover a região.')
+    }
+  }, [])
+
   const addCommunityAlert = useCallback(
     async (alert) => {
       if (!currentUser) {
@@ -198,7 +285,6 @@ export function UserFeaturesProvider({ children }) {
 
       setCommunityAlerts((currentAlerts) => [newAlert, ...currentAlerts])
 
-      // Dispara notificação real via WhatsApp para os usuários inscritos no backend
       const token = localStorage.getItem(TOKEN_KEY)
       const res = await fetch(`${API_URL}/notificacoes/broadcast`, {
         method: 'POST',
@@ -226,6 +312,7 @@ export function UserFeaturesProvider({ children }) {
   const value = useMemo(
     () => ({
       profile,
+      changePassword,
       updateProfile,
       currentUser,
       loginUser,
@@ -234,9 +321,14 @@ export function UserFeaturesProvider({ children }) {
       logoutPreviewUser,
       communityAlerts,
       addCommunityAlert,
+      fetchRegions,
+      fetchMyRegions,
+      subscribeRegion,
+      unsubscribeRegion,
     }),
     [
       profile,
+      changePassword,
       updateProfile,
       currentUser,
       loginUser,
@@ -245,6 +337,10 @@ export function UserFeaturesProvider({ children }) {
       logoutPreviewUser,
       communityAlerts,
       addCommunityAlert,
+      fetchRegions,
+      fetchMyRegions,
+      subscribeRegion,
+      unsubscribeRegion,
     ]
   )
 
