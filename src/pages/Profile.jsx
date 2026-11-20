@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -7,12 +7,81 @@ import Form from 'react-bootstrap/Form'
 import { Link } from 'react-router-dom'
 import { useUserFeatures } from '../context/useUserFeatures'
 
+const NIVEL_LABEL = {
+  atencao: 'Atenção',
+  alerta: 'Alerta',
+  critico: 'Crítico',
+}
+
 function Profile() {
-  const { profile, updateProfile } = useUserFeatures()
+  const {
+    profile,
+    updateProfile,
+    currentUser,
+    fetchRegions,
+    fetchMyRegions,
+    subscribeRegion,
+    unsubscribeRegion,
+  } = useUserFeatures()
+
   const [form, setForm] = useState(profile)
-  const [regionInput, setRegionInput] = useState('')
+  const [availableRegions, setAvailableRegions] = useState([])
+  const [myRegions, setMyRegions] = useState([])
+  const [selectedRegionId, setSelectedRegionId] = useState('')
+  const [nivelMinimo, setNivelMinimo] = useState('atencao')
+  const [loadingRegions, setLoadingRegions] = useState(false)
+  const [savingRegion, setSavingRegion] = useState(false)
+  const [savingAccount, setSavingAccount] = useState(false)
   const [accountNotice, setAccountNotice] = useState('')
   const [passwordNotice, setPasswordNotice] = useState('')
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      name: profile.name || prev.name,
+      email: profile.email || prev.email,
+      phone: profile.phone || prev.phone,
+      notifications: profile.notifications || prev.notifications,
+    }))
+  }, [profile])
+
+  useEffect(() => {
+    let active = true
+
+    async function loadRegionsData() {
+      setLoadingRegions(true)
+      try {
+        const allRegions = await fetchRegions()
+        if (!active) return
+        setAvailableRegions(allRegions)
+        if (allRegions.length > 0 && !selectedRegionId) {
+          setSelectedRegionId(String(allRegions[0].id))
+        }
+
+        if (currentUser) {
+          const mine = await fetchMyRegions()
+          if (active) {
+            setMyRegions(mine)
+          }
+        } else if (active) {
+          setMyRegions([])
+        }
+      } catch (err) {
+        if (active) {
+          setAccountNotice(err.message || 'Não foi possível carregar as regiões.')
+        }
+      } finally {
+        if (active) {
+          setLoadingRegions(false)
+        }
+      }
+    }
+
+    loadRegionsData()
+    return () => {
+      active = false
+    }
+  }, [currentUser, fetchRegions, fetchMyRegions])
 
   function updateField(event) {
     const { name, value } = event.target
@@ -27,31 +96,70 @@ function Profile() {
     }))
   }
 
-  function saveAccountChanges() {
-    updateProfile(form)
-    setAccountNotice('Dados atualizados nesta prévia. A gravação permanente depende do backend.')
+  async function saveAccountChanges() {
+    setSavingAccount(true)
+    setAccountNotice('')
+    try {
+      await updateProfile(form)
+      setAccountNotice(
+        'Preferência de WhatsApp salva no servidor. (Edição de nome/e-mail ainda não possui rota completa no back-end.)'
+      )
+    } catch (err) {
+      setAccountNotice(err.message || 'Erro ao salvar alterações.')
+    } finally {
+      setSavingAccount(false)
+    }
   }
 
-  function addRegion(event) {
+  async function handleAddRegion(event) {
     event.preventDefault()
-    const region = regionInput.trim()
-    if (!region) return
+    setAccountNotice('')
 
-    if (form.regions.some((item) => item.toLowerCase() === region.toLowerCase())) {
-      setAccountNotice('Essa região já está na sua lista.')
+    if (!currentUser) {
+      setAccountNotice('Faça login para vincular regiões à sua conta.')
       return
     }
 
-    setForm((current) => ({ ...current, regions: [...current.regions, region] }))
-    setRegionInput('')
-    setAccountNotice('')
+    if (!selectedRegionId) {
+      setAccountNotice('Selecione uma região na lista.')
+      return
+    }
+
+    const jaInscrito = myRegions.some(
+      (item) => Number(item.regiao_id ?? item.regiao?.id) === Number(selectedRegionId)
+    )
+    if (jaInscrito) {
+      setAccountNotice('Você já acompanha essa região.')
+      return
+    }
+
+    setSavingRegion(true)
+    try {
+      await subscribeRegion(Number(selectedRegionId), nivelMinimo)
+      const updated = await fetchMyRegions()
+      setMyRegions(updated)
+      setAccountNotice('Região adicionada com sucesso ao seu perfil.')
+    } catch (err) {
+      setAccountNotice(err.message || 'Erro ao adicionar região.')
+    } finally {
+      setSavingRegion(false)
+    }
   }
 
-  function removeRegion(regionToRemove) {
-    setForm((current) => ({
-      ...current,
-      regions: current.regions.filter((region) => region !== regionToRemove),
-    }))
+  async function handleRemoveRegion(regiaoId) {
+    setAccountNotice('')
+    setSavingRegion(true)
+    try {
+      await unsubscribeRegion(regiaoId)
+      setMyRegions((current) =>
+        current.filter((item) => Number(item.regiao_id ?? item.regiao?.id) !== Number(regiaoId))
+      )
+      setAccountNotice('Região removida do seu perfil.')
+    } catch (err) {
+      setAccountNotice(err.message || 'Erro ao remover região.')
+    } finally {
+      setSavingRegion(false)
+    }
   }
 
   function handlePasswordSubmit(event) {
@@ -62,23 +170,23 @@ function Profile() {
       return
     }
 
-    setPasswordNotice('A alteração de senha será ativada quando o backend estiver conectado. Nenhuma senha foi armazenada.')
+    setPasswordNotice(
+      'A alteração de senha ainda será conectada ao back-end (próximo passo que vamos implementar).'
+    )
     event.currentTarget.reset()
   }
 
   return (
     <Container className="profile-page py-5">
       <header className="mb-4">
-        <h1 className="h3 text-verde mb-2">Perfil do usuário</h1>
+        <h1 className="h3 text-verde mb-2">Perfil do usuário:</h1>
         <p className="text-muted mb-0">
           Gerencie seus dados, notificações e regiões monitoradas.
         </p>
       </header>
-
       <div className="alert alert-info border-0" role="status">
-        Prévia do frontend: os dados desta página ficam apenas nesta sessão do navegador e serão conectados ao backend depois.
+        As regiões monitoradas podem ser fixadas e ficam salvas na sua conta.
       </div>
-
       <div className="d-flex flex-wrap justify-content-end mb-4">
         <Link to="/alertas?novo=1" className="btn btn-laranja">
           Criar um alerta
@@ -90,10 +198,10 @@ function Profile() {
           <Col lg={6}>
             <Card className="profile-card h-100">
               <Card.Body>
-                <h2 className="h5 text-verde mb-3">Dados da conta</h2>
+                <h2 className="h5 text-verde mb-3">Dados da conta:</h2>
                 <div className="profile-fields">
                   <div>
-                    <label className="form-label" htmlFor="profile-name">Nome completo</label>
+                    <label className="form-label" htmlFor="profile-name">Nome Completo:</label>
                     <input
                       id="profile-name"
                       className="form-control"
@@ -105,7 +213,7 @@ function Profile() {
                     />
                   </div>
                   <div>
-                    <label className="form-label" htmlFor="profile-email">E-mail</label>
+                    <label className="form-label" htmlFor="profile-email">E-mail:</label>
                     <input
                       id="profile-email"
                       className="form-control"
@@ -118,7 +226,7 @@ function Profile() {
                     />
                   </div>
                   <div>
-                    <label className="form-label" htmlFor="profile-phone">Telefone</label>
+                    <label className="form-label" htmlFor="profile-phone">Telefone:</label>
                     <input
                       id="profile-phone"
                       className="form-control"
@@ -163,7 +271,7 @@ function Profile() {
                   />
                 </div>
                 <p className="small text-muted mt-3 mb-0">
-                  Os canais serão ativados quando os serviços de notificação forem conectados.
+                  A opção de WhatsApp é salva na sua conta ao clicar em salvar.
                 </p>
               </Card.Body>
             </Card>
@@ -173,37 +281,92 @@ function Profile() {
             <Card className="profile-card h-100">
               <Card.Body>
                 <h2 className="h5 text-verde mb-3">Regiões monitoradas</h2>
-                <div className="d-flex gap-2">
-                  <label className="visually-hidden" htmlFor="profile-region">Adicionar região</label>
-                  <input
+
+                <form className="d-flex flex-wrap gap-2" onSubmit={handleAddRegion}>
+                  <label className="visually-hidden" htmlFor="profile-region">
+                    Selecionar região
+                  </label>
+                  <select
                     id="profile-region"
-                    className="form-control"
-                    value={regionInput}
-                    onChange={(event) => setRegionInput(event.target.value)}
-                    placeholder="Ex.: Manaus, AM"
-                  />
-                  <button type="button" className="btn btn-laranja flex-shrink-0" onClick={addRegion}>
-                    Adicionar
+                    className="form-select"
+                    value={selectedRegionId}
+                    onChange={(event) => setSelectedRegionId(event.target.value)}
+                    disabled={loadingRegions || savingRegion || availableRegions.length === 0}
+                  >
+                    {availableRegions.length === 0 ? (
+                      <option value="">Carregando regiões...</option>
+                    ) : (
+                      availableRegions.map((reg) => (
+                        <option key={reg.id} value={reg.id}>
+                          {reg.nome_regiao} {reg.codigo_estado ? `(${reg.codigo_estado})` : ''}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                 <h6>Nível de Alerta:</h6>
+                  <label className="visually-hidden" htmlFor="profile-region-level">
+                    Nível mínimo de alerta
+                  </label>
+                  <select
+                    id="profile-region-level"
+                    className="form-select w-auto"
+                    value={nivelMinimo}
+                    onChange={(event) => setNivelMinimo(event.target.value)}
+                    disabled={savingRegion}
+                  >
+                    <option value="atencao">Atenção</option>
+                    <option value="alerta">Alerta</option>
+                    <option value="critico">Crítico</option>                  
+                  </select>
+                  
+
+                  <button
+                    type="submit"
+                    className="btn btn-laranja flex-shrink-0"
+                    disabled={savingRegion || loadingRegions}
+                  >
+                    {savingRegion ? 'Salvando...' : 'Adicionar'}
                   </button>
-                </div>
-                {form.regions.length > 0 ? (
-                  <ul className="profile-region-list">
-                    {form.regions.map((region) => (
-                      <li key={region}>
-                        <span>{region}</span>
-                        <button
-                          type="button"
-                          className="profile-region-remove"
-                          aria-label={`Remover ${region}`}
-                          onClick={() => removeRegion(region)}
-                        >
-                          Remover
-                        </button>
-                      </li>
-                    ))}
+                </form>
+
+                {loadingRegions ? (
+                  <p className="small text-muted mt-3 mb-0">Carregando regiões...</p>
+                ) : myRegions.length > 0 ? (
+                  <ul className="profile-region-list mt-3">
+                    {myRegions.map((item) => {
+                      const regId = item.regiao_id ?? item.regiao?.id
+                      const nomeExibicao =
+                        item.regiao?.nome_regiao || `Região #${regId}`
+                      const uf = item.regiao?.codigo_estado
+                        ? ` (${item.regiao.codigo_estado})`
+                        : ''
+                      const nivelTexto = NIVEL_LABEL[item.nivel_minimo] || item.nivel_minimo
+
+                      return (
+                        <li key={regId}>
+                          <span>
+                            {nomeExibicao}
+                            {uf} — <strong>{nivelTexto}</strong>
+                          </span>
+                          <button
+                            type="button"
+                            className="profile-region-remove"
+                            aria-label={`Remover ${nomeExibicao}`}
+                            disabled={savingRegion}
+                            onClick={() => handleRemoveRegion(regId)}
+                          >
+                            Remover
+                          </button>
+                        </li>
+                      )
+                    })}
                   </ul>
                 ) : (
-                  <p className="small text-muted mt-3 mb-0">Nenhuma região adicionada.</p>
+                  <p className="small text-muted mt-3 mb-0">
+                    {currentUser
+                      ? 'Nenhuma região adicionada ainda.'
+                      : 'Faça login para ver e gerenciar suas regiões.'}
+                  </p>
                 )}
               </Card.Body>
             </Card>
@@ -235,8 +398,13 @@ function Profile() {
 
           <Col xs={12}>
             <div className="d-flex flex-wrap align-items-center gap-3">
-              <button type="button" className="btn btn-laranja" onClick={saveAccountChanges}>
-                Salvar dados e preferências
+              <button
+                type="button"
+                className="btn btn-laranja"
+                disabled={savingAccount}
+                onClick={saveAccountChanges}
+              >
+                {savingAccount ? 'Salvando...' : 'Salvar dados e preferências'}
               </button>
               {accountNotice && <p className="profile-notice mb-0" role="status">{accountNotice}</p>}
             </div>
