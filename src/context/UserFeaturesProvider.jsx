@@ -138,6 +138,32 @@ export function UserFeaturesProvider({ children }) {
     setProfile(initialProfile)
   }, [])
 
+  const changePassword = useCallback(async ({ currentPassword, newPassword }) => {
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (!token) {
+      throw new Error('É necessário estar logado para alterar a senha.')
+    }
+
+    const res = await fetch(`${API_URL}/usuarios/me/senha`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        senhaAtual: currentPassword,
+        novaSenha: newPassword,
+      }),
+    })
+
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      throw new Error(data.erro || 'Não foi possível alterar a senha.')
+    }
+
+    return data.mensagem || 'Senha alterada com sucesso.'
+  }, [])
+
   const updateProfile = useCallback(async (nextProfile) => {
     setProfile(nextProfile)
 
@@ -286,6 +312,7 @@ export function UserFeaturesProvider({ children }) {
   const value = useMemo(
     () => ({
       profile,
+      changePassword,
       updateProfile,
       currentUser,
       loginUser,
@@ -301,6 +328,7 @@ export function UserFeaturesProvider({ children }) {
     }),
     [
       profile,
+      changePassword,
       updateProfile,
       currentUser,
       loginUser,
