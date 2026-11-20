@@ -187,7 +187,7 @@ async function handleCommunityAlertSubmit(event) {
           <Link
             to="/login"
             state={{ from: '/alertas?novo=1' }}
-            className="btn btn-outline-success"
+            className="btn btn-info"
           >
             Entre ou cadastre-se para criar um alerta
           </Link>
