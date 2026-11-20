@@ -50,7 +50,7 @@ function MapPage() {
                 </div>
                 <hr />
                 <h6 className="mb-2">Níveis de alerta</h6>
-                <div className="d-flex flex-column gap-2">
+                <div className="d-flex flex-line gap-2">
                   <Badge bg="" className="badge-atencao align-self-start">Atenção</Badge>
                   <Badge bg="" className="badge-alerta align-self-start">Alerta</Badge>
                   <Badge bg="" className="badge-critico align-self-start">Crítico</Badge>
