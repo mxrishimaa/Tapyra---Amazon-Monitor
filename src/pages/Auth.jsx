@@ -137,9 +137,10 @@ function Auth() {
             />
           </div>
 
-          {isRegistering && (
-            <div className="auth-field">
-              <label htmlFor="auth-phone">WhatsApp (opcional)</label>
+        {isRegistering && (
+          <div className="auth-field">
+            <label htmlFor="auth-phone">WhatsApp (opcional)</label>
+              <div className="auth-phone-row">
               <input
                 id="auth-phone"
                 name="phone"
@@ -147,12 +148,13 @@ function Auth() {
                 autoComplete="tel"
                 placeholder="(92) 99999-0000"
               />
-              <label className="d-flex align-items-center gap-2 mt-2 small">
-                <input type="checkbox" name="acceptWhatsapp" defaultChecked />
-                Receber alertas de queimadas no WhatsApp
-              </label>
+            <label className="auth-check">
+              <input type="checkbox" name="acceptWhatsapp" defaultChecked />
+              <span>Receber alertas de queimadas no WhatsApp</span>
+            </label>
+              </div>
             </div>
-          )}
+)}
 
           <div className="auth-field">
             <label htmlFor="auth-password">Senha</label>
