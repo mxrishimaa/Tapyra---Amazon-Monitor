@@ -24,7 +24,12 @@ describe('04 - Alertas da Comunidade e Disparo WhatsApp', () => {
       body: { ok: true, enviados: 1 },
     }).as('postBroadcast')
 
+    cy.intercept('POST', '**/auth/login').as('postLogin')
+
     cy.loginViaUi(usuario.email, usuario.senha)
+    cy.wait('@postLogin').its('response.statusCode').should('eq', 200)
+    cy.url().should('include', '/perfil')
+
     cy.visit('/alertas')
 
     cy.contains('button', 'Criar um alerta').click()
