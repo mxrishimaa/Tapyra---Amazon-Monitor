@@ -61,10 +61,15 @@ export function UserFeaturesProvider({ children }) {
     const savedUserRaw = localStorage.getItem(USER_KEY)
     const savedUser = savedUserRaw ? JSON.parse(savedUserRaw) : {}
 
-    fetch(`${API_URL}/auth/me`, {
+   fetch(`${API_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
     })
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((res) => {
+        if (res.status === 401 || res.status === 403) throw new Error('sessao-invalida')
+        if (!res.ok) throw new Error('falha-temporaria')
+        return res.json()
+      })
       .then((data) => {
         const apiUser = data.usuario || data.user || data.dados || data || {}
         aplicarSessao({
@@ -75,10 +80,12 @@ export function UserFeaturesProvider({ children }) {
           whatsapp_opt_in: apiUser.whatsapp_opt_in ?? savedUser.whatsappOptIn,
         })
       })
-      .catch(() => {
-        localStorage.removeItem(TOKEN_KEY)
-        localStorage.removeItem(USER_KEY)
-      })
+      .catch((err) => {
+        if (err.message === 'sessao-invalida') {
+          localStorage.removeItem(TOKEN_KEY)
+          localStorage.removeItem(USER_KEY)
+        }
+    })
   }, [aplicarSessao])
 
   const loginUser = useCallback(
