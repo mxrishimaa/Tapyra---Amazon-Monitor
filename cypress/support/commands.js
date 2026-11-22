@@ -24,7 +24,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-const API_URL = 'http://localhost:3000'
+const API_URL = Cypress.expose('API_URL') || 'http://localhost:3000'
 
 Cypress.Commands.add('cadastrarViaApi', (usuario) => {
   return cy.request({
@@ -42,9 +42,12 @@ Cypress.Commands.add('cadastrarViaApi', (usuario) => {
 })
 
 Cypress.Commands.add('loginViaUi', (email, senha) => {
+  cy.intercept('POST', '**/auth/login').as('loginViaUi')
   cy.visit('/login')
   cy.get('#login-tab').click()
   cy.get('#auth-email').clear().type(email)
   cy.get('#auth-password').clear().type(senha)
   cy.get('.auth-submit').click()
+  cy.wait('@loginViaUi')
+  cy.url().should('not.include', '/login')
 })

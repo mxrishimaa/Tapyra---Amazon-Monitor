@@ -63,10 +63,13 @@ describe('02 - Autenticação, Cadastro e Sessão JWT', () => {
     cy.wait('@postLogin').its('response.statusCode').should('eq', 200)
     cy.url().should('include', '/perfil')
 
-    // Vai para /alertas e dá F5 para testar restauração do token sem cair no RequireUser
+    // Vai para /alertas e espera a primeira checagem de sessão terminar
     cy.visit('/alertas')
+    cy.wait('@getMe')
+
+    // Agora sim dá o F5 e confere que a sessão foi restaurada
     cy.reload()
-    cy.wait('@getMe').its('response.statusCode').should('eq', 200)
+    cy.wait('@getMe').its('response.statusCode').should('be.oneOf', [200, 304])
     cy.contains('button', 'Criar um alerta').should('be.visible')
   })
 })

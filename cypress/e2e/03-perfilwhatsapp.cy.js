@@ -17,8 +17,8 @@ describe('03 - Perfil do Usuário e Preferências de WhatsApp', () => {
   })
 
   it('Deve exibir os dados do usuário logado na página de perfil', () => {
-    cy.contains(usuario.nome).should('be.visible')
-    cy.contains(usuario.email).should('be.visible')
+    cy.get('#profile-name').should('have.value', usuario.nome)
+    cy.get('#profile-email').should('have.value', usuario.email)
   })
 
   it('Deve sincronizar alteração de telefone/WhatsApp com o backend', () => {

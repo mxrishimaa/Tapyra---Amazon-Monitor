@@ -131,7 +131,8 @@ async function handleCommunityAlertSubmit(event) {
       return
     }
 
-    const formData = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const formData = new FormData(form)
     const startedAt = new Date(formData.get('startedAt'))
 
     if (Number.isNaN(startedAt.getTime())) {
@@ -146,7 +147,7 @@ async function handleCommunityAlertSubmit(event) {
         startedAt: startedAt.toISOString(),
         description: formData.get('description').trim(),
       })
-      event.currentTarget.reset()
+      form.reset()
       setFormUserEmail(null)
       setAvisoRelato('Relato publicado e alerta enviado por WhatsApp para os inscritos!')
     } catch (err) {
